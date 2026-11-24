@@ -15,7 +15,7 @@ export function ecrireApercu(tuiles) {
     const x0 = Math.min(...glyphe.map((f) => f.x)), y1 = Math.max(...glyphe.map((f) => f.y + f.h));
     const d = glyphe.flatMap((f) => f.trace.map(([op, ...n]) => op === 'h' ? 'Z' : op.toUpperCase() + n.map((v, i) => (i % 2 ? y1 - v : v - x0).toFixed(2)).join(' '))).join(' ');
     const c = TABLE_GLYPHES[signature];
-    return `<div><svg viewBox="-3 -3 20 20" width="90" height="90" style="background:#ddd"><path d="${d}" fill="#000"/></svg><br><b>${ids.get(signature)}</b> × ${nb}<br>${c ? `= <big>${esc(c)}</big>` : '?'}${note ? `<br><small>${esc(note)}</small>` : ''}</div>`;
+    return `<div data-id="${ids.get(signature)}" data-signature="${esc(signature)}"><svg viewBox="-3 -3 20 20" width="90" height="90" style="background:#ddd"><path d="${d}" fill="#000"/></svg><br><b>${ids.get(signature)}</b> × ${nb}<br>${c ? `= <big>${esc(c)}</big>` : '?'}${note ? `<br><small>${esc(note)}</small>` : ''}</div>`;
   };
   const html = `<!doctype html><meta charset="utf-8"><title>Glyphes</title><style>body{font:14px sans-serif}main{display:flex;flex-wrap:wrap;gap:8px}main div{text-align:center;width:100px}</style><h1>${tuiles.length} glyphes distincts</h1><main>${tuiles.map(tuile).join('')}</main>`;
   fs.writeFileSync(new URL('../sources/glyphes.html', import.meta.url), html);

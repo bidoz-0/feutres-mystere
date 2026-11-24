@@ -1,26 +1,7 @@
-// Livres à extraire avec extraire-lot.js (titres provisoires ; `pages` = dernier numéro imprimé, à ajouter quand on le connaît).
+// Livres de l'utilisatrice, à extraire avec extraire-lot.js (`pages` = dernier numéro imprimé, quand on le connaît).
+// Les autres PDF de sources/pdfs/ passent aussi l'outil (testé le 2026-11-24) : les rajouter ici si elle les achète.
 const D = 'sources/pdfs/';
 export const LIVRES = [
   { pdf: D + 'Nuancier_Princesses_Disney_Tome_2-1.pdf', id: 'princesses-t2', titre: 'Princesses Disney – Tome 2', pages: 100 },
-  { pdf: D + 'Couleurs-Disney-Grands-Classiques-Tome01.pdf', id: 'grands-classiques-t1', titre: 'Disney Grands Classiques – Tome 1' },
-  { pdf: D + 'couleurs-disney-grands-classiques-tome2.pdf', id: 'grands-classiques-t2', titre: 'Disney Grands Classiques – Tome 2' },
-  { pdf: D + 'couleurs-disney-grands-classiques-tome3.pdf', id: 'grands-classiques-t3', titre: 'Disney Grands Classiques – Tome 3' },
-  { pdf: D + 'couleurs-disney-grands-classiques-tome4.pdf', id: 'grands-classiques-t4', titre: 'Disney Grands Classiques – Tome 4' },
-  { pdf: D + 'couleurs-Grands-Tome10-disney.pdf', id: 'grands-classiques-t10', titre: 'Disney Grands Classiques – Tome 10' },
-  { pdf: D + 'Nuancier-couleurs-disney-grands-classiques-tome11_OK.pdf', id: 'grands-classiques-t11', titre: 'Disney Grands Classiques – Tome 11' },
-  { pdf: D + 'Nuancier-Les-Grands-Classiques-Disney-Tome13.pdf', id: 'grands-classiques-t13', titre: 'Disney Grands Classiques – Tome 13' },
-  { pdf: D + 'Nuancier-Les-Grands-Classiques-Special-Portraits.pdf', id: 'grands-classiques-portraits', titre: 'Disney Grands Classiques – Spécial Portraits' },
-  { pdf: D + 'Nuancier_Tres-Grands-Classiques_Disney.pdf', id: 'tres-grands-classiques', titre: 'Très Grands Classiques Disney' },
-  { pdf: D + 'NUANCIER-numerique-05-zootopie.pdf', id: 'zootopie', titre: 'Zootopie' },
-  { pdf: D + 'NUANCIER-numerique-06-poster-raiponse-lanterne.pdf', id: 'raiponce-lanternes', titre: 'Raiponce – Poster lanternes' },
-  { pdf: D + 'Nuancier-HerosvsMechants.pdf', id: 'heros-vs-mechants', titre: 'Disney Héros vs Méchants' },
-  { pdf: D + 'Nuancier-Pokeemon(2025).pdf', id: 'pokemon-t1', titre: 'Pokémon – Tome 1' },
-  { pdf: D + 'Nuancier-Pokeemon-Tome_2.pdf', id: 'pokemon-t2', titre: 'Pokémon – Tome 2' },
-  { pdf: D + 'Nuancier-coloriage-mystere-Star-Wars.pdf', id: 'star-wars', titre: 'Star Wars' },
-  { pdf: D + 'Nuancier_L-Age_de_Glace.pdf', id: 'age-de-glace', titre: "L'Âge de glace" },
-  { pdf: D + 'Nuancier_Mondes_fantastiques(2025).pdf', id: 'mondes-fantastiques', titre: 'Mondes fantastiques' },
-  { pdf: D + 'coloriages-mysteres-fantastiques.pdf', id: 'fantastiques', titre: 'Fantastiques' },
-  { pdf: D + 'Nuancier_Princesses_Collector-1.pdf', id: 'princesses-collector', titre: 'Princesses Disney – Collector' },
-  { pdf: D + 'couleurs-coloriages-mysteres-Princesses-disney.pdf', id: 'princesses-t1', titre: 'Princesses Disney – Tome 1' },
-  { pdf: D + 'couleurs-coloriages-mysteres-mechants-disney.pdf', id: 'mechants', titre: 'Méchants Disney' },
+  { pdf: D + 'Nuancier-couleurs-disney-grands-classiques-tome11_OK.pdf', id: 'grands-classiques-t11', titre: 'Disney Grands Classiques – Tome 11', pages: 100 },
 ];
