@@ -1,6 +1,6 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
 import { creerMemoire, versChoix } from '../memoire/memoire.js';
-import { proposerNuancier, disponibles, choixFiges, choixInconnus, proposerParBoite, doublons, trouverFeutre, TEXTE_INCONNU } from './proposer.js';
+import { proposerNuancier, disponibles, choixFiges, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
 import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
@@ -53,17 +53,29 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   boutonPage.addEventListener('click', () => {
     const finir = !memoire.estPageFinie(livreId, numero);
     if (finir) figer();
+    else memoire.marquerPageSansCode(livreId, numero, false);
     memoire.marquerPageFinie(livreId, numero, finir);
     afficher();
   });
   const boutonInconnu = el('button', { type: 'button', class: 'secondaire action-livre',
     texte: 'Fini, je n\'ai pas noté les feutres' });
   boutonInconnu.addEventListener('click', () => {
-    memoire.completerChoix(livreId, numero, choixInconnus(coloriage, memoire.lireChoix(livreId, numero)));
+    memoire.marquerPageSansCode(livreId, numero, true);
     memoire.marquerPageFinie(livreId, numero, true);
     afficher();
   });
-  racine.append(bandeau, reglage, liste, boutonPage, boutonInconnu, panneau);
+  // Page finie sans code : une seule carte à la place des lignes, avec de quoi régénérer le code couleur.
+  const boutonRegenerer = el('button', { type: 'button', class: 'secondaire', texte: 'Régénérer le code couleur' });
+  boutonRegenerer.addEventListener('click', () => {
+    memoire.marquerPageSansCode(livreId, numero, false);
+    figer();
+    afficher();
+  });
+  const carteSansCode = el('section', { class: 'sans-code', 'aria-live': 'polite' },
+    el('strong', { texte: 'Code couleur inconnu' }),
+    el('p', { texte: 'Ce dessin est fini, mais ses feutres n’ont pas été notés.' }),
+    boutonRegenerer);
+  racine.append(bandeau, reglage, carteSansCode, liste, boutonPage, boutonInconnu, panneau);
   // Toucher le fond grisé ferme le panneau.
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
@@ -124,7 +136,12 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   function afficher() {
     const livreFini = memoire.estLivreFini(livreId);
     const bloquee = memoire.estPageBloquee(livreId, numero);
-    bandeau.hidden = !bloquee;
+    const sansCode = memoire.estPageSansCode(livreId, numero);
+    carteSansCode.hidden = !sansCode;
+    liste.hidden = sansCode;
+    reglage.hidden = sansCode;
+    boutonRegenerer.disabled = livreFini;
+    bandeau.hidden = !bloquee || sansCode;
     reglage.disabled = bloquee;
     bandeau.textContent = livreFini ? 'Livre fini : feutres bloqués. Reprends le livre (depuis la liste des pages) pour modifier.'
       : 'Page finie : feutres bloqués';
@@ -142,7 +159,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
         duo(ligne.hex, f?.hex),
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
-          f ? el('small', { texte: MARQUES[f.marque] }) : ligne.texte === TEXTE_INCONNU ? null : el('small', { texte: 'saisie libre' }),
+          el('small', { texte: f ? MARQUES[f.marque] : 'saisie libre' }),
           f && indisponibles.has(f.code) ? el('em', { class: 'etiquette alerte', texte: 'ne marche plus' }) : null,
           ligne.modifie && !bloquee ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
@@ -154,6 +171,6 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     }));
   }
 
-  if (memoire.estPageBloquee(livreId, numero)) figer(); // rattrapage des pages validées avant le correctif
+  if (memoire.estPageBloquee(livreId, numero) && !memoire.estPageSansCode(livreId, numero)) figer(); // rattrapage des pages validées avant le correctif
   afficher();
 }

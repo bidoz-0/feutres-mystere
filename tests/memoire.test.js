@@ -124,3 +124,13 @@ test('indisponibles : les entrées autres que true sont ignorées', () => {
   const mem = creerMemoire(faux(JSON.stringify({ indisponibles: { A: true, B: false, C: 'oui' } })));
   assert.deepEqual([...mem.lireIndisponibles()], ['A']);
 });
+
+test('page sans code : aller-retour et persistance', () => {
+  const s = faux(null);
+  const m = creerMemoire(s);
+  assert.equal(m.estPageSansCode('l1', 3), false);
+  m.marquerPageSansCode('l1', 3, true);
+  assert.equal(creerMemoire(s).estPageSansCode('l1', 3), true);
+  m.marquerPageSansCode('l1', 3, false);
+  assert.equal(creerMemoire(s).estPageSansCode('l1', 3), false);
+});

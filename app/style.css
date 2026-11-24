@@ -149,3 +149,7 @@ button[type=submit] { border: 0; background: var(--accent); color: var(--accent-
   .carre:active, .numero:active, .ligne:not(.bloquee):active, .alternatives button:active, .retour:active,
   .option:active, button[type=submit]:active, .secondaire:active:not(:disabled) { transform: none; }
 }
+.sans-code { display: grid; justify-items: center; gap: 8px; margin: 8px 0 16px; padding: 28px 20px; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); text-align: center; }
+.sans-code strong { font-family: var(--titre); font-weight: 600; font-size: 1.4rem; }
+.sans-code p { margin: 0 0 8px; color: var(--doux); }
+.sans-code[hidden], .lignes[hidden], .reglage[hidden] { display: none; }
