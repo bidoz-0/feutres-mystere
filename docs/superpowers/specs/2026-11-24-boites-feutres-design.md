@@ -39,6 +39,8 @@ L'appli sert à une seule personne, qui colorie les livres Hachette avec deux bo
 **Données**
 - `localStorage` : `indisponibles: { "<code>": true }`.
 
+> **Partie 3 annulée le 2026-11-24.** Essai sur les vraies photos : codes lus justes 28 % (GuangNa) et 5 % (Languo), couleur seule environ 5 % et 0 % (éclairage de la pièce trop loin des couleurs de référence). L'utilisatrice aurait dû presque tout corriger à la main. L'utilisateur a choisi d'annuler. Le texte ci-dessous est gardé pour mémoire.
+
 ## Partie 3 : la boîte prise en photo
 
 **Approches étudiées**

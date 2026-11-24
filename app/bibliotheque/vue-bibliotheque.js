@@ -31,7 +31,9 @@ function carre(l, livre, memoire) {
 }
 
 export async function vueBibliotheque(racine, _, estActuelle) {
-  racine.append(entete('Mes coloriages mystère'));
+  const tete = entete('Mes coloriages mystère');
+  tete.append(el('a', { class: 'lien-boites', href: '#/boites' }, 'Mes boîtes'));
+  racine.append(tete);
   try {
     const livres = await chargerIndexLivres();
     // un livre illisible reste affiché (titre seul)

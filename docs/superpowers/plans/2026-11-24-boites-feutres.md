@@ -136,6 +136,8 @@
 
 ---
 
+> **Annulée le 2026-11-24** après la tâche 7 (essai de lecture) : le seuil n'est pas atteint (GuangNa 28 % justes, Languo 5 % ; couleur seule environ 5 % et 0 %). Les tâches 8 à 12 ne sont pas réalisées.
+
 ## Partie 3 : la boîte prise en photo
 
 ### Tâche 7 : essai de lecture des codes (à faire en premier, en parallèle des parties 1 et 2)
