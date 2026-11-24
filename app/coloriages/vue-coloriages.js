@@ -1,5 +1,6 @@
-import { chargerLivre } from '../donnees/charger.js';
-import { creerMemoire } from '../memoire/memoire.js';
+import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
+import { creerMemoire, versChoix } from '../memoire/memoire.js';
+import { choixFiges } from '../nuancier/proposer.js';
 import { el, entete, erreur } from '../ui/elements.js';
 
 export async function vueColoriages(racine, { livreId }, estActuelle) {
@@ -10,8 +11,24 @@ export async function vueColoriages(racine, { livreId }, estActuelle) {
     const memoire = creerMemoire();
     const bouton = el('button', { type: 'button', class: 'secondaire action-livre' });
     const majBouton = () => { bouton.textContent = memoire.estLivreFini(livreId) ? 'Reprendre le livre' : 'Valider le livre (fini)'; };
-    bouton.addEventListener('click', () => {
-      memoire.marquerLivreFini(livreId, !memoire.estLivreFini(livreId));
+    const message = el('p', { class: 'bandeau', role: 'status', hidden: '' });
+    bouton.addEventListener('click', async () => {
+      const finir = !memoire.estLivreFini(livreId);
+      message.hidden = true;
+      if (finir) {
+        try {
+          const feutres = await chargerFeutres();
+          const preference = versChoix(memoire.lirePreference());
+          for (const c of livre.coloriages) {
+            memoire.completerChoix(livreId, c.numero, choixFiges(c, feutres, preference, memoire.lireChoix(livreId, c.numero)));
+          }
+        } catch {
+          message.textContent = "Impossible de charger les feutres : le livre n'est pas marqué fini.";
+          message.hidden = false;
+          return;
+        }
+      }
+      memoire.marquerLivreFini(livreId, finir);
       majBouton();
     });
     majBouton();
@@ -26,7 +43,7 @@ export async function vueColoriages(racine, { livreId }, estActuelle) {
                 'aria-label': `Page ${c.libelle}${finie ? ' (finie)' : ''}` },
                 c.libelle, finie ? el('span', { class: 'coche', 'aria-hidden': 'true', texte: '✓' }) : null));
           }))),
-      bouton);
+      bouton, message);
   } catch {
     if (estActuelle()) erreur(racine, 'Impossible de charger ce livre.');
   }
