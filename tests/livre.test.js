@@ -4,14 +4,27 @@ import fs from 'node:fs';
 
 const f = new URL('../data/livres/princesses-t2.json', import.meta.url);
 
-test('princesses-t2 : 74 coloriages numérotés, cases valides', () => {
-  const livre = JSON.parse(fs.readFileSync(f, 'utf8'));
-  assert.deepEqual(livre.coloriages.map((c) => c.numero), Array.from({ length: 74 }, (_, i) => i + 1));
-  for (const c of livre.coloriages) {
-    assert.ok(c.cases.length >= 10 && c.cases.length <= 100, `coloriage ${c.numero} : ${c.cases.length} cases`);
-    assert.equal(new Set(c.cases.map((k) => k.symbole)).size, c.cases.length, `symboles en double, coloriage ${c.numero}`);
+test('princesses-t2 : numéros imprimés uniques, croissants et contigus, cases valides', () => {
+  const { coloriages } = JSON.parse(fs.readFileSync(f, 'utf8'));
+  assert.equal(coloriages.length, 74);
+  assert.equal(coloriages[0].libelle, '1 & 2');
+  let attendu = 1;
+  for (const c of coloriages) {
+    assert.match(c.libelle, /^\d+( & \d+)?$/);
+    assert.equal(c.numero, attendu);
+    attendu = Number(c.libelle.split(' & ').at(-1)) + 1;
+    assert.ok(c.cases.length >= 10 && c.cases.length <= 100, `coloriage ${c.libelle} : ${c.cases.length} cases`);
+    assert.equal(new Set(c.cases.map((k) => k.symbole)).size, c.cases.length, `symboles en double, coloriage ${c.libelle}`);
     for (const k of c.cases) assert.match(k.hex, /^#[0-9a-f]{6}$/);
   }
+  assert.equal(attendu, 101);
+});
+
+test('coloriage « 21 & 22 » : 44 cases, symboles dans l’ordre du nuancier', () => {
+  const c = JSON.parse(fs.readFileSync(f, 'utf8')).coloriages.find((x) => x.libelle.includes('22'));
+  assert.equal(c.numero, 21);
+  assert.equal(c.cases.length, 44);
+  assert.deepEqual(c.cases.slice(0, 5).map((k) => k.symbole), ['1', '2', '3', '4', '5']);
 });
 
 test('chaque symbole utilisé a son dessin dans glyphes', () => {
@@ -22,8 +35,8 @@ test('chaque symbole utilisé a son dessin dans glyphes', () => {
   }
 });
 
-test('coloriage 22 : le « c » imprimé deux fois devient c et c (2)', () => {
-  const cases = JSON.parse(fs.readFileSync(f, 'utf8')).coloriages[21].cases;
+test('coloriage « 28 » : le « c » imprimé deux fois devient c et c (2)', () => {
+  const cases = JSON.parse(fs.readFileSync(f, 'utf8')).coloriages.find((x) => x.libelle === '28').cases;
   assert.equal(cases.find((k) => k.symbole === 'c').base, undefined);
   assert.equal(cases.find((k) => k.symbole === 'c (2)').base, 'c');
 });

@@ -6,16 +6,26 @@ import { el, entete, erreur, pastille, dessinSymbole } from '../ui/elements.js';
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
 
 export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
-  racine.append(entete(`Coloriage ${numero}`, `#/livre/${livreId}`));
+  const retour = `#/livre/${livreId}`;
   let feutres, livre;
   try {
     [feutres, livre] = await Promise.all([chargerFeutres(), chargerLivre(livreId)]);
   } catch {
-    return estActuelle() && erreur(racine, 'Impossible de charger les données.');
+    if (!estActuelle()) return;
+    racine.append(entete('Page', retour));
+    return erreur(racine, 'Impossible de charger les données.');
   }
   if (!estActuelle()) return;
   const coloriage = livre.coloriages.find((c) => c.numero === numero);
-  if (!coloriage) return erreur(racine, `Le coloriage ${numero} n'existe pas.`);
+  if (!coloriage) {
+    racine.append(entete(`Page ${numero}`, retour));
+    // 2e page d'une double page (« 1 & 2 » est enregistré sous le numéro 1)
+    const double = livre.coloriages.find((c) => c.numero === numero - 1 && c.libelle.endsWith(` & ${numero}`));
+    if (!double) return erreur(racine, `La page ${numero} n'existe pas.`);
+    return racine.append(el('p', {}, `La page ${numero} fait partie des pages `,
+      el('a', { href: `${retour}/${double.numero}`, texte: double.libelle }), '.'));
+  }
+  racine.append(entete(`${coloriage.libelle.includes(' & ') ? 'Pages' : 'Page'} ${coloriage.libelle}`, retour));
 
   const memoire = creerMemoire();
   const lignes = (pref) =>

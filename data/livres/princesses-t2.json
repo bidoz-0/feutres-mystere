@@ -371,6 +371,7 @@
  "coloriages": [
   {
    "numero": 1,
+   "libelle": "1 & 2",
    "cases": [
     {
      "symbole": "1",
@@ -591,7 +592,8 @@
    ]
   },
   {
-   "numero": 2,
+   "numero": 3,
+   "libelle": "3",
    "cases": [
     {
      "symbole": "1",
@@ -692,7 +694,8 @@
    ]
   },
   {
-   "numero": 3,
+   "numero": 4,
+   "libelle": "4",
    "cases": [
     {
      "symbole": "1",
@@ -821,7 +824,8 @@
    ]
   },
   {
-   "numero": 4,
+   "numero": 5,
+   "libelle": "5 & 6",
    "cases": [
     {
      "symbole": "1",
@@ -994,7 +998,8 @@
    ]
   },
   {
-   "numero": 5,
+   "numero": 7,
+   "libelle": "7",
    "cases": [
     {
      "symbole": "1",
@@ -1143,7 +1148,8 @@
    ]
   },
   {
-   "numero": 6,
+   "numero": 8,
+   "libelle": "8",
    "cases": [
     {
      "symbole": "1",
@@ -1288,7 +1294,8 @@
    ]
   },
   {
-   "numero": 7,
+   "numero": 9,
+   "libelle": "9 & 10",
    "cases": [
     {
      "symbole": "1",
@@ -1429,7 +1436,8 @@
    ]
   },
   {
-   "numero": 8,
+   "numero": 11,
+   "libelle": "11",
    "cases": [
     {
      "symbole": "1",
@@ -1594,7 +1602,8 @@
    ]
   },
   {
-   "numero": 9,
+   "numero": 12,
+   "libelle": "12",
    "cases": [
     {
      "symbole": "1",
@@ -1751,7 +1760,8 @@
    ]
   },
   {
-   "numero": 10,
+   "numero": 13,
+   "libelle": "13",
    "cases": [
     {
      "symbole": "1",
@@ -1872,7 +1882,8 @@
    ]
   },
   {
-   "numero": 11,
+   "numero": 14,
+   "libelle": "14",
    "cases": [
     {
      "symbole": "1",
@@ -2009,7 +2020,8 @@
    ]
   },
   {
-   "numero": 12,
+   "numero": 15,
+   "libelle": "15 & 16",
    "cases": [
     {
      "symbole": "1",
@@ -2298,7 +2310,8 @@
    ]
   },
   {
-   "numero": 13,
+   "numero": 17,
+   "libelle": "17",
    "cases": [
     {
      "symbole": "1",
@@ -2391,7 +2404,8 @@
    ]
   },
   {
-   "numero": 14,
+   "numero": 18,
+   "libelle": "18",
    "cases": [
     {
      "symbole": "1",
@@ -2532,7 +2546,8 @@
    ]
   },
   {
-   "numero": 15,
+   "numero": 19,
+   "libelle": "19",
    "cases": [
     {
      "symbole": "1",
@@ -2689,7 +2704,8 @@
    ]
   },
   {
-   "numero": 16,
+   "numero": 20,
+   "libelle": "20",
    "cases": [
     {
      "symbole": "1",
@@ -2862,7 +2878,8 @@
    ]
   },
   {
-   "numero": 17,
+   "numero": 21,
+   "libelle": "21 & 22",
    "cases": [
     {
      "symbole": "1",
@@ -3043,7 +3060,8 @@
    ]
   },
   {
-   "numero": 18,
+   "numero": 23,
+   "libelle": "23",
    "cases": [
     {
      "symbole": "1",
@@ -3160,7 +3178,8 @@
    ]
   },
   {
-   "numero": 19,
+   "numero": 24,
+   "libelle": "24",
    "cases": [
     {
      "symbole": "1",
@@ -3281,7 +3300,8 @@
    ]
   },
   {
-   "numero": 20,
+   "numero": 25,
+   "libelle": "25 & 26",
    "cases": [
     {
      "symbole": "1",
@@ -3438,7 +3458,8 @@
    ]
   },
   {
-   "numero": 21,
+   "numero": 27,
+   "libelle": "27",
    "cases": [
     {
      "symbole": "1",
@@ -3559,7 +3580,8 @@
    ]
   },
   {
-   "numero": 22,
+   "numero": 28,
+   "libelle": "28",
    "cases": [
     {
      "symbole": "1",
@@ -3689,7 +3711,8 @@
    ]
   },
   {
-   "numero": 23,
+   "numero": 29,
+   "libelle": "29",
    "cases": [
     {
      "symbole": "1",
@@ -3834,7 +3857,8 @@
    ]
   },
   {
-   "numero": 24,
+   "numero": 30,
+   "libelle": "30",
    "cases": [
     {
      "symbole": "1",
@@ -4015,7 +4039,8 @@
    ]
   },
   {
-   "numero": 25,
+   "numero": 31,
+   "libelle": "31 & 32",
    "cases": [
     {
      "symbole": "1",
@@ -4228,7 +4253,8 @@
    ]
   },
   {
-   "numero": 26,
+   "numero": 33,
+   "libelle": "33",
    "cases": [
     {
      "symbole": "1",
@@ -4365,7 +4391,8 @@
    ]
   },
   {
-   "numero": 27,
+   "numero": 34,
+   "libelle": "34",
    "cases": [
     {
      "symbole": "1",
@@ -4502,7 +4529,8 @@
    ]
   },
   {
-   "numero": 28,
+   "numero": 35,
+   "libelle": "35 & 36",
    "cases": [
     {
      "symbole": "1",
@@ -4663,7 +4691,8 @@
    ]
   },
   {
-   "numero": 29,
+   "numero": 37,
+   "libelle": "37 & 38",
    "cases": [
     {
      "symbole": "1",
@@ -4836,7 +4865,8 @@
    ]
   },
   {
-   "numero": 30,
+   "numero": 39,
+   "libelle": "39 & 40",
    "cases": [
     {
      "symbole": "1",
@@ -5049,7 +5079,8 @@
    ]
   },
   {
-   "numero": 31,
+   "numero": 41,
+   "libelle": "41",
    "cases": [
     {
      "symbole": "1",
@@ -5166,7 +5197,8 @@
    ]
   },
   {
-   "numero": 32,
+   "numero": 42,
+   "libelle": "42",
    "cases": [
     {
      "symbole": "1",
@@ -5311,7 +5343,8 @@
    ]
   },
   {
-   "numero": 33,
+   "numero": 43,
+   "libelle": "43 & 44",
    "cases": [
     {
      "symbole": "1",
@@ -5460,7 +5493,8 @@
    ]
   },
   {
-   "numero": 34,
+   "numero": 45,
+   "libelle": "45",
    "cases": [
     {
      "symbole": "1",
@@ -5613,7 +5647,8 @@
    ]
   },
   {
-   "numero": 35,
+   "numero": 46,
+   "libelle": "46",
    "cases": [
     {
      "symbole": "1",
@@ -5734,7 +5769,8 @@
    ]
   },
   {
-   "numero": 36,
+   "numero": 47,
+   "libelle": "47 & 48",
    "cases": [
     {
      "symbole": "1",
@@ -5911,7 +5947,8 @@
    ]
   },
   {
-   "numero": 37,
+   "numero": 49,
+   "libelle": "49 & 50",
    "cases": [
     {
      "symbole": "1",
@@ -6080,7 +6117,8 @@
    ]
   },
   {
-   "numero": 38,
+   "numero": 51,
+   "libelle": "51",
    "cases": [
     {
      "symbole": "1",
@@ -6181,7 +6219,8 @@
    ]
   },
   {
-   "numero": 39,
+   "numero": 52,
+   "libelle": "52",
    "cases": [
     {
      "symbole": "1",
@@ -6362,7 +6401,8 @@
    ]
   },
   {
-   "numero": 40,
+   "numero": 53,
+   "libelle": "53 & 54",
    "cases": [
     {
      "symbole": "1",
@@ -6551,7 +6591,8 @@
    ]
   },
   {
-   "numero": 41,
+   "numero": 55,
+   "libelle": "55",
    "cases": [
     {
      "symbole": "1",
@@ -6696,7 +6737,8 @@
    ]
   },
   {
-   "numero": 42,
+   "numero": 56,
+   "libelle": "56",
    "cases": [
     {
      "symbole": "1",
@@ -6829,7 +6871,8 @@
    ]
   },
   {
-   "numero": 43,
+   "numero": 57,
+   "libelle": "57 & 58",
    "cases": [
     {
      "symbole": "1",
@@ -6994,7 +7037,8 @@
    ]
   },
   {
-   "numero": 44,
+   "numero": 59,
+   "libelle": "59",
    "cases": [
     {
      "symbole": "1",
@@ -7111,7 +7155,8 @@
    ]
   },
   {
-   "numero": 45,
+   "numero": 60,
+   "libelle": "60",
    "cases": [
     {
      "symbole": "1",
@@ -7244,7 +7289,8 @@
    ]
   },
   {
-   "numero": 46,
+   "numero": 61,
+   "libelle": "61",
    "cases": [
     {
      "symbole": "1",
@@ -7369,7 +7415,8 @@
    ]
   },
   {
-   "numero": 47,
+   "numero": 62,
+   "libelle": "62",
    "cases": [
     {
      "symbole": "1",
@@ -7466,7 +7513,8 @@
    ]
   },
   {
-   "numero": 48,
+   "numero": 63,
+   "libelle": "63 & 64",
    "cases": [
     {
      "symbole": "1",
@@ -7603,7 +7651,8 @@
    ]
   },
   {
-   "numero": 49,
+   "numero": 65,
+   "libelle": "65",
    "cases": [
     {
      "symbole": "1",
@@ -7744,7 +7793,8 @@
    ]
   },
   {
-   "numero": 50,
+   "numero": 66,
+   "libelle": "66",
    "cases": [
     {
      "symbole": "1",
@@ -7829,7 +7879,8 @@
    ]
   },
   {
-   "numero": 51,
+   "numero": 67,
+   "libelle": "67 & 68",
    "cases": [
     {
      "symbole": "1",
@@ -8038,7 +8089,8 @@
    ]
   },
   {
-   "numero": 52,
+   "numero": 69,
+   "libelle": "69 & 70",
    "cases": [
     {
      "symbole": "1",
@@ -8247,7 +8299,8 @@
    ]
   },
   {
-   "numero": 53,
+   "numero": 71,
+   "libelle": "71 & 72",
    "cases": [
     {
      "symbole": "1",
@@ -8404,7 +8457,8 @@
    ]
   },
   {
-   "numero": 54,
+   "numero": 73,
+   "libelle": "73",
    "cases": [
     {
      "symbole": "1",
@@ -8549,7 +8603,8 @@
    ]
   },
   {
-   "numero": 55,
+   "numero": 74,
+   "libelle": "74",
    "cases": [
     {
      "symbole": "1",
@@ -8702,7 +8757,8 @@
    ]
   },
   {
-   "numero": 56,
+   "numero": 75,
+   "libelle": "75 & 76",
    "cases": [
     {
      "symbole": "1",
@@ -8847,7 +8903,8 @@
    ]
   },
   {
-   "numero": 57,
+   "numero": 77,
+   "libelle": "77",
    "cases": [
     {
      "symbole": "1",
@@ -8916,7 +8973,8 @@
    ]
   },
   {
-   "numero": 58,
+   "numero": 78,
+   "libelle": "78",
    "cases": [
     {
      "symbole": "1",
@@ -9057,7 +9115,8 @@
    ]
   },
   {
-   "numero": 59,
+   "numero": 79,
+   "libelle": "79 & 80",
    "cases": [
     {
      "symbole": "1",
@@ -9214,7 +9273,8 @@
    ]
   },
   {
-   "numero": 60,
+   "numero": 81,
+   "libelle": "81",
    "cases": [
     {
      "symbole": "1",
@@ -9367,7 +9427,8 @@
    ]
   },
   {
-   "numero": 61,
+   "numero": 82,
+   "libelle": "82",
    "cases": [
     {
      "symbole": "1",
@@ -9512,7 +9573,8 @@
    ]
   },
   {
-   "numero": 62,
+   "numero": 83,
+   "libelle": "83 & 84",
    "cases": [
     {
      "symbole": "1",
@@ -9669,7 +9731,8 @@
    ]
   },
   {
-   "numero": 63,
+   "numero": 85,
+   "libelle": "85",
    "cases": [
     {
      "symbole": "1",
@@ -9814,7 +9877,8 @@
    ]
   },
   {
-   "numero": 64,
+   "numero": 86,
+   "libelle": "86",
    "cases": [
     {
      "symbole": "1",
@@ -9935,7 +9999,8 @@
    ]
   },
   {
-   "numero": 65,
+   "numero": 87,
+   "libelle": "87 & 88",
    "cases": [
     {
      "symbole": "1",
@@ -10148,7 +10213,8 @@
    ]
   },
   {
-   "numero": 66,
+   "numero": 89,
+   "libelle": "89",
    "cases": [
     {
      "symbole": "1",
@@ -10273,7 +10339,8 @@
    ]
   },
   {
-   "numero": 67,
+   "numero": 90,
+   "libelle": "90",
    "cases": [
     {
      "symbole": "1",
@@ -10414,7 +10481,8 @@
    ]
   },
   {
-   "numero": 68,
+   "numero": 91,
+   "libelle": "91 & 92",
    "cases": [
     {
      "symbole": "1",
@@ -10587,7 +10655,8 @@
    ]
   },
   {
-   "numero": 69,
+   "numero": 93,
+   "libelle": "93",
    "cases": [
     {
      "symbole": "1",
@@ -10740,7 +10809,8 @@
    ]
   },
   {
-   "numero": 70,
+   "numero": 94,
+   "libelle": "94",
    "cases": [
     {
      "symbole": "1",
@@ -10861,7 +10931,8 @@
    ]
   },
   {
-   "numero": 71,
+   "numero": 95,
+   "libelle": "95 & 96",
    "cases": [
     {
      "symbole": "1",
@@ -11054,7 +11125,8 @@
    ]
   },
   {
-   "numero": 72,
+   "numero": 97,
+   "libelle": "97",
    "cases": [
     {
      "symbole": "1",
@@ -11183,7 +11255,8 @@
    ]
   },
   {
-   "numero": 73,
+   "numero": 98,
+   "libelle": "98",
    "cases": [
     {
      "symbole": "1",
@@ -11316,7 +11389,8 @@
    ]
   },
   {
-   "numero": 74,
+   "numero": 99,
+   "libelle": "99 & 100",
    "cases": [
     {
      "symbole": "1",

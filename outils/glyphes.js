@@ -48,3 +48,23 @@ export function cheminGlyphe(formes) {
   }).join('');
   return { d, l: +r(Math.max(...xs) - x0), h: +r(y1 - Math.min(...ys)) };
 }
+
+// Libellé imprimé à gauche d'un coloriage : une seule forme où chaque glyphe est précédé d'un point isolé « m h »
+// (sa ligne de base). Renvoie [{ y, signature }] dans l'ordre du flux, y servant à regrouper les glyphes par ligne.
+const marqueur = (a, i) => a[i]?.[0] === 'm' && a[i + 1]?.[0] === 'h';
+export function glyphesDeLibelle(forme) {
+  const out = [];
+  let cur = [], y = null;
+  const fin = () => {
+    if (!cur.length) return;
+    const pts = cur.flatMap(([, ...n]) => n);
+    const x0 = Math.min(...pts.filter((_, j) => j % 2 === 0)), y0 = Math.min(...pts.filter((_, j) => j % 2));
+    out.push({ y, signature: signatureGlyphe([{ x: x0, y: y0, trace: cur }]) });
+    cur = [];
+  };
+  forme.trace.forEach((o, i, a) => {
+    if (marqueur(a, i)) { fin(); y = o[2]; } else if (!(o[0] === 'h' && marqueur(a, i - 1))) cur.push(o);
+  });
+  fin();
+  return out;
+}
