@@ -1,0 +1,9 @@
+{
+  "name": "feutres-mystere",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node outils/serveur.js",
+    "test": "node --test"
+  }
+}

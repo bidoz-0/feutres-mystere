@@ -10,7 +10,7 @@ HTML + CSS + JavaScript (modules ES), sans framework ni build, sans dépendance 
 (Commandes disponibles après la Task 1 du plan.)
 - `npm start` puis ouvrir http://localhost:8080
 - `npm test`
-- Extraire un livre : `node outils/extraire-livre.js sources/pdfs/<fichier>.pdf <id> "<titre>"`
+- Extraire un livre : `node outils/extraire-livre.js sources/pdfs/<fichier>.pdf <id> "<titre>" [nombre de pages]` (ex. `… princesses-t2 "Princesses Disney – Tome 2" 100` : s'arrête si le dernier numéro imprimé diffère)
 - Extraire les feutres : `npm start` puis http://localhost:8080/outils/extraire-feutres.html
 
 ## Règles
