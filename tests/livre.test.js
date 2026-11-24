@@ -45,5 +45,5 @@ test('coloriage « 28 » : dernière case corrigée en ψ, aucun doublon dans le
 
 test('index.json contient princesses-t2', () => {
   const index = JSON.parse(fs.readFileSync(new URL('../data/livres/index.json', import.meta.url), 'utf8'));
-  assert.deepEqual(index.find((l) => l.id === 'princesses-t2'), { id: 'princesses-t2', titre: 'Princesses Disney – Tome 2' });
+  assert.deepEqual(index.find((l) => l.id === 'princesses-t2'), { id: 'princesses-t2', titre: 'Princesses Disney – Tome 2', couverture: 'couvertures/princesses-t2.jpg' });
 });

@@ -1,10 +1,12 @@
 [
  {
   "id": "princesses-t2",
-  "titre": "Princesses Disney – Tome 2"
+  "titre": "Princesses Disney – Tome 2",
+  "couverture": "couvertures/princesses-t2.jpg"
  },
  {
   "id": "grands-classiques-t11",
-  "titre": "Disney Grands Classiques – Tome 11"
+  "titre": "Disney Grands Classiques – Tome 11",
+  "couverture": "couvertures/grands-classiques-t11.jpg"
  }
 ]
