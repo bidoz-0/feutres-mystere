@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { plusProches, proposerNuancier, doublons, trouverFeutre, MALUS } from '../app/nuancier/proposer.js';
+import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, MALUS } from '../app/nuancier/proposer.js';
 
 const vrais = JSON.parse(readFileSync(new URL('../data/feutres.json', import.meta.url), 'utf8'));
 const BLEU_GUANGNA = 'GB-BLEU';
@@ -44,4 +44,12 @@ test('proposerNuancier : choix mémorisé prioritaire', () => {
 test('doublons', () => {
   assert.deepEqual(doublons([{ symbole: '1', feutre: { code: 'X' } }, { symbole: '2', feutre: { code: 'X' } }]), { 1: ['2'], 2: ['1'] });
   assert.deepEqual(doublons([{ symbole: '1', feutre: null }, { symbole: '2', feutre: { code: 'X' } }]), {});
+});
+
+test('proposerParBoite : une liste par boîte, préférée en premier', () => {
+  const g = proposerParBoite('#ff0000', f, 1, 3);
+  assert.deepEqual(g.map((x) => x.marque), ['guangna', 'languo']);
+  assert.deepEqual(g[0].feutres.map((x) => x.feutre.code), ['GB-ROUGE', BLEU_GUANGNA]);
+  assert.deepEqual(g[1].feutres.map((x) => x.feutre.code), ['L1']);
+  assert.deepEqual(proposerParBoite('#ff0000', f, 0).map((x) => x.marque), ['languo', 'guangna']);
 });

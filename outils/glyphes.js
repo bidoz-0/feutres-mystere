@@ -1,9 +1,9 @@
 // Identité d'un symbole du nuancier : ses tracés vectoriels, indépendants de la position et de la couleur.
 const r = (v) => v.toFixed(1);
 
-// Formes de petite taille (symbole) dont le centre est dans la boîte d'une case.
+// Formes de petite taille (symbole : ≤ 12 pt, ou 85 % de la case si elle est plus grande) dont le centre est dans la boîte d'une case.
 export const glyphesDeCase = (c, formes) =>
-  formes.filter((f) => f.h <= 12 && f.x + f.w / 2 >= c.x && f.x + f.w / 2 <= c.x + c.w && f.y + f.h / 2 >= c.y && f.y + f.h / 2 <= c.y + c.h);
+  formes.filter((f) => f.h <= Math.max(12, c.h * 0.85) && f.x + f.w / 2 >= c.x && f.x + f.w / 2 <= c.x + c.w && f.y + f.h / 2 >= c.y && f.y + f.h / 2 <= c.y + c.h);
 
 // Coordonnées translatées par rapport au coin bas-gauche du glyphe, arrondies à 0.1 pt.
 export function signatureGlyphe(formes) {
@@ -59,7 +59,8 @@ export function glyphesDeLibelle(forme) {
     if (!cur.length) return;
     const pts = cur.flatMap(([, ...n]) => n);
     const x0 = Math.min(...pts.filter((_, j) => j % 2 === 0)), y0 = Math.min(...pts.filter((_, j) => j % 2));
-    out.push({ y, signature: signatureGlyphe([{ x: x0, y: y0, trace: cur }]) });
+    const glyphe = [{ x: x0, y: y0, w: Math.max(...pts.filter((_, j) => j % 2 === 0)) - x0, h: Math.max(...pts.filter((_, j) => j % 2)) - y0, trace: cur }];
+    out.push({ y, signature: signatureGlyphe(glyphe), glyphe }); // glyphe : pour l'aperçu des libellés inconnus
     cur = [];
   };
   forme.trace.forEach((o, i, a) => {

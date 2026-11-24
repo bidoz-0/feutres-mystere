@@ -50,3 +50,12 @@ export function doublons(lignes) {
   }
   return out;
 }
+
+// Les n plus proches de chaque boîte, la boîte préférée d'abord (préférence < 0 = Languo).
+export function proposerParBoite(hex, feutres, preference, n = 3) {
+  const marques = preference > 0 ? ['guangna', 'languo'] : ['languo', 'guangna'];
+  return marques.map((marque) => ({
+    marque,
+    feutres: plusProches(hex, feutres.filter((f) => f.marque === marque), 0, n),
+  }));
+}

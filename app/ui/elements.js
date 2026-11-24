@@ -43,10 +43,26 @@ export function pastille(hex, label) {
   return p;
 }
 
+// Couleur du livre et couleur du feutre côte à côte, pour comparer d'un coup d'œil.
+export function duo(hexLivre, hexFeutre) {
+  return el('span', { class: 'duo' },
+    pastille(hexLivre, 'couleur du livre'), pastille(hexFeutre, 'couleur du feutre'));
+}
+
+function flecheRetour() {
+  const svg = document.createElementNS(SVG, 'svg');
+  svg.setAttribute('viewBox', '0 0 24 24');
+  svg.setAttribute('aria-hidden', 'true');
+  const path = document.createElementNS(SVG, 'path');
+  path.setAttribute('d', 'M15 5l-7 7 7 7');
+  svg.append(path);
+  return svg;
+}
+
 export function entete(titre, retour) {
-  return el('header', { class: 'entete' },
-    retour ? el('a', { class: 'retour', href: retour, 'aria-label': 'Retour', texte: '←' }) : null,
-    el('h1', { texte: titre }));
+  const lien = retour ? el('a', { class: 'retour', href: retour, 'aria-label': 'Retour' }) : null;
+  lien?.append(flecheRetour());
+  return el('header', { class: 'entete' }, lien, el('h1', { texte: titre }));
 }
 
 export const erreur = (racine, message) =>
