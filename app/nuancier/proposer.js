@@ -1,6 +1,7 @@
 // Correspondance couleur -> feutre. Pur calcul : ni DOM, ni localStorage.
 import { hexVersLab, deltaE } from '../couleurs/couleur.js';
 
+export const TEXTE_INCONNU = 'Code couleur inconnu';
 export const MALUS = 15;
 
 // Lab calculé une seule fois par tableau de feutres.
@@ -48,6 +49,15 @@ export function choixFiges(coloriage, feutres, preference, choix) {
     if (!choix?.[l.symbole] && l.feutre) figes[l.symbole] = { code: l.feutre.code };
   }
   return figes;
+}
+
+// Page finie sans avoir noté les feutres : texte libre pour les symboles sans choix.
+export function choixInconnus(coloriage, choix) {
+  const inconnus = {};
+  for (const { symbole } of coloriage.cases) {
+    if (!choix?.[symbole]) inconnus[symbole] = { texte: TEXTE_INCONNU };
+  }
+  return inconnus;
 }
 
 export function doublons(lignes) {

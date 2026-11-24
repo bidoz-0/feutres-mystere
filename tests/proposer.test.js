@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, choixFiges, MALUS } from '../app/nuancier/proposer.js';
+import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, choixFiges, choixInconnus, MALUS } from '../app/nuancier/proposer.js';
 
 const vrais = JSON.parse(readFileSync(new URL('../data/feutres.json', import.meta.url), 'utf8'));
 const BLEU_GUANGNA = 'GB-BLEU';
@@ -58,4 +58,12 @@ test('choixFiges : seulement les symboles sans choix', () => {
   const c = { cases: [{ symbole: 'a', hex: '#ff0000' }, { symbole: 'b', hex: '#0000ff' }] };
   assert.deepEqual(choixFiges(c, f, 0, { b: { code: 'L1' } }), { a: { code: 'L1' } });
   assert.deepEqual(choixFiges(c, f, 0, { a: { texte: 'x' }, b: { code: 'L1' } }), {});
+});
+
+test('choixInconnus : ne remplit que les symboles sans choix', () => {
+  const c = { cases: [{ symbole: 'a', hex: '#ff0000' }, { symbole: 'b', hex: '#00ff00' }, { symbole: 'c', hex: '#0000ff' }] };
+  assert.deepEqual(choixInconnus(c, { b: { code: 'RY-07' } }), {
+    a: { texte: 'Code couleur inconnu' },
+    c: { texte: 'Code couleur inconnu' },
+  });
 });

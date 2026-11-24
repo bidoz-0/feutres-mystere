@@ -1,6 +1,6 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
 import { creerMemoire, versChoix } from '../memoire/memoire.js';
-import { proposerNuancier, choixFiges, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
+import { proposerNuancier, choixFiges, choixInconnus, proposerParBoite, doublons, trouverFeutre, TEXTE_INCONNU } from './proposer.js';
 import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
@@ -54,7 +54,14 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     memoire.marquerPageFinie(livreId, numero, finir);
     afficher();
   });
-  racine.append(bandeau, reglage, liste, boutonPage, panneau);
+  const boutonInconnu = el('button', { type: 'button', class: 'secondaire action-livre',
+    texte: 'Fini, je n\'ai pas noté les feutres' });
+  boutonInconnu.addEventListener('click', () => {
+    memoire.completerChoix(livreId, numero, choixInconnus(coloriage, memoire.lireChoix(livreId, numero)));
+    memoire.marquerPageFinie(livreId, numero, true);
+    afficher();
+  });
+  racine.append(bandeau, reglage, liste, boutonPage, boutonInconnu, panneau);
   // Toucher le fond grisé ferme le panneau.
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
@@ -120,6 +127,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     bandeau.textContent = livreFini ? 'Livre fini : feutres bloqués. Reprends le livre (depuis la liste des pages) pour modifier.'
       : 'Page finie : feutres bloqués';
     boutonPage.disabled = livreFini;
+    boutonInconnu.hidden = bloquee;
     boutonPage.textContent = livreFini ? 'Livre fini : reprends le livre pour modifier cette page'
       : memoire.estPageFinie(livreId, numero) ? 'Reprendre la page' : 'Page finie';
     const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero));
@@ -132,7 +140,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
         duo(ligne.hex, f?.hex),
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
-          el('small', { texte: f ? MARQUES[f.marque] : 'saisie libre' }),
+          f ? el('small', { texte: MARQUES[f.marque] }) : ligne.texte === TEXTE_INCONNU ? null : el('small', { texte: 'saisie libre' }),
           ligne.modifie && !bloquee ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
             ? el('span', { class: 'doublon' }, 'même feutre que ',
