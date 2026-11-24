@@ -27,6 +27,29 @@ const ordreCode = (a, b) => a.code.localeCompare(b.code, 'fr', { numeric: true }
 export const listeTriee = (feutres, indisponibles, seulementHorsUsage = false) =>
   feutres.filter((f) => !seulementHorsUsage || indisponibles.has(f.code)).sort(ordreCode);
 
+const sansAccent = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+const codeNormalise = (s) => sansAccent(s).replace(/[\s-]/g, '');
+
+// Recherche par code (sans espace ni tiret, préfixe accepté) ou par nom ; code exact, puis préfixe, puis le reste.
+export function chercherFeutres(feutres, saisie, max = 20) {
+  const q = codeNormalise(saisie), nom = sansAccent(saisie).trim();
+  if (!q) return [];
+  const rang = (f) => {
+    const c = codeNormalise(f.code);
+    if (c === q) return 0;
+    if (c.startsWith(q)) return 1;
+    if (c.includes(q)) return 2;
+    return sansAccent(f.nom).includes(nom) ? 3 : -1;
+  };
+  return feutres.map((f) => [rang(f), f]).filter(([r]) => r >= 0)
+    .sort((a, b) => a[0] - b[0] || ordreCode(a[1], b[1])).slice(0, max).map(([, f]) => f);
+}
+
+// Feutres hors d'usage, rangés par boîte puis par code.
+export const horsUsageTries = (feutres, indisponibles) =>
+  feutres.filter((f) => indisponibles.has(f.code))
+    .sort((a, b) => a.marque.localeCompare(b.marque) || ordreCode(a, b));
+
 export const nbHorsUsage = (feutres, indisponibles) => feutres.filter((f) => indisponibles.has(f.code)).length;
 
 export const texteHorsUsage = (n) => (n === 0 ? 'Tous marchent' : `${n} ne marche${n > 1 ? 'nt' : ''} plus`);

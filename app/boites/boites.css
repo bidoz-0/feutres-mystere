@@ -141,3 +141,14 @@ html:has(.scene) { overflow: hidden; }
   .loupe.visible { transition: none; }
   .loupe-corps, .loupe.visible .loupe-corps { transform: none; }
 }
+
+/* Recherche et liste « Ne marchent plus » */
+.recherche { margin-bottom: 16px; }
+.etiquette-recherche { display: block; margin-bottom: 6px; font-weight: 600; font-size: .95rem; }
+.champ-recherche { width: 100%; min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: var(--papier-fonce); color: inherit; font: inherit; }
+.champ-recherche:focus-visible { outline: 2px solid var(--rouge); outline-offset: 2px; }
+.resultats { margin-top: 10px; }
+.resultats:not(:empty) { animation: fondu 160ms ease-out; }
+@keyframes fondu { from { opacity: 0; } }
+.titre-hs { margin: 24px 0 10px; font-family: var(--titre); font-size: 1.2rem; }
+@media (prefers-reduced-motion: reduce) { .resultats:not(:empty) { animation: none; } }

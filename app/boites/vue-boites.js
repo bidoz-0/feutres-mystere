@@ -3,7 +3,9 @@ import { chargerFeutres } from '../donnees/charger.js';
 import { creerMemoire } from '../memoire/memoire.js';
 import { el, entete, erreur } from '../ui/elements.js';
 import { GRILLES, disposition } from './disposition.js';
-import { NOMS, grilleEcran, nbHorsUsage, texteHorsUsage } from './presentation.js';
+import { NOMS, grilleEcran, horsUsageTries, nbHorsUsage, texteHorsUsage } from './presentation.js';
+import { ligneFeutre } from './ligne-feutre.js';
+import { champRecherche } from './recherche.js';
 import { entrerPaysage } from './plein-ecran.js';
 import { transition, versRoute, vueAffichee } from './transition.js';
 import { ouvertureDepuisMesBoites } from './vue-boite.js';
@@ -50,9 +52,21 @@ export async function vueBoites(racine, _, estActuelle) {
   try {
     const feutres = await chargerFeutres();
     if (!estActuelle()) return;
-    const indisponibles = creerMemoire().lireIndisponibles();
-    racine.append(el('ul', { class: 'boites' },
-      ...Object.keys(GRILLES).map((m) => el('li', {}, carte(m, feutres, indisponibles)))));
+    const memoire = creerMemoire();
+    const cartes = el('ul', { class: 'boites' });
+    const titre = el('h2', { class: 'titre-hs' });
+    const liste = el('ul', { class: 'liste-boite' });
+    const vide = el('p', { class: 'liste-vide', texte: 'Tous les feutres marchent.' });
+    const maj = () => {
+      const indisponibles = memoire.lireIndisponibles();
+      const hs = horsUsageTries(feutres, indisponibles);
+      cartes.replaceChildren(...Object.keys(GRILLES).map((m) => el('li', {}, carte(m, feutres, indisponibles))));
+      titre.textContent = `Ne marchent plus (${hs.length})`;
+      liste.replaceChildren(...hs.map((f) => ligneFeutre(f, true, memoire, maj, true)));
+      vide.hidden = hs.length > 0;
+    };
+    maj();
+    racine.append(champRecherche({ feutres, memoire, surChangement: maj, avecBoite: true }), cartes, titre, liste, vide);
   } catch {
     if (estActuelle()) erreur(racine, 'Impossible de charger les feutres.');
   }
