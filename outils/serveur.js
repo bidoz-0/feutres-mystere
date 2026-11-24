@@ -11,6 +11,7 @@ const TYPES = {
   '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8',
   '.webp': 'image/webp',
+  '.jpg': 'image/jpeg',
   '.woff2': 'font/woff2',
 };
 

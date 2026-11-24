@@ -157,7 +157,8 @@ export function ecrireLivre(livre) {
   fs.writeFileSync(path.join(dossier, `${livre.id}.json`), JSON.stringify(livre, null, 1) + '\n');
   const fIndex = path.join(dossier, 'index.json');
   const index = fs.existsSync(fIndex) ? JSON.parse(fs.readFileSync(fIndex, 'utf8')) : [];
-  fs.writeFileSync(fIndex, JSON.stringify([...index.filter((l) => l.id !== livre.id), { id: livre.id, titre: livre.titre }], null, 1) + '\n');
+  const ancien = index.find((l) => l.id === livre.id); // garde ses autres champs (ex. couverture)
+  fs.writeFileSync(fIndex, JSON.stringify([...index.filter((l) => l.id !== livre.id), { ...ancien, id: livre.id, titre: livre.titre }], null, 1) + '\n');
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

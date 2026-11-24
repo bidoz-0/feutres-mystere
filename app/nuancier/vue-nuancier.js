@@ -48,7 +48,13 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
       });
       return el('label', { class: 'option' }, radio, el('span', { texte: nom }));
     })));
-  racine.append(reglage, liste, panneau);
+  const bandeau = el('p', { class: 'bandeau', role: 'status' });
+  const boutonPage = el('button', { type: 'button', class: 'secondaire action-livre' });
+  boutonPage.addEventListener('click', () => {
+    memoire.marquerPageFinie(livreId, numero, !memoire.estPageFinie(livreId, numero));
+    afficher();
+  });
+  racine.append(bandeau, reglage, liste, boutonPage, panneau);
   // Toucher le fond grisé ferme le panneau.
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
@@ -103,12 +109,20 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   }
 
   function afficher() {
+    const livreFini = memoire.estLivreFini(livreId);
+    const bloquee = memoire.estPageBloquee(livreId, numero);
+    bandeau.hidden = !bloquee;
+    bandeau.textContent = livreFini ? 'Livre fini : feutres bloqués. Reprends le livre (depuis la liste des pages) pour modifier.'
+      : 'Page finie : feutres bloqués';
+    boutonPage.disabled = livreFini;
+    boutonPage.textContent = livreFini ? 'Livre fini : reprends le livre pour modifier cette page'
+      : memoire.estPageFinie(livreId, numero) ? 'Reprendre la page' : 'Page finie';
     const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero));
     const dbl = doublons(l);
     liste.replaceChildren(...l.map((ligne) => {
       const f = ligne.feutre;
       const nom = f ? (f.nom !== f.code ? `${f.code} · ${f.nom}` : f.code) : ligne.texte;
-      const b = el('button', { type: 'button', class: 'ligne' },
+      const b = el(bloquee ? 'div' : 'button', bloquee ? { class: 'ligne bloquee' } : { type: 'button', class: 'ligne' },
         el('span', { class: 'cellule-symbole' }, dessinSymbole(livre, ligne.symbole)),
         duo(ligne.hex, f?.hex),
         el('span', { class: 'texte' },
@@ -119,7 +133,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
             ? el('span', { class: 'doublon' }, 'même feutre que ',
               ...dbl[ligne.symbole].flatMap((s, i) => [i ? ', ' : '', dessinSymbole(livre, s)]))
             : null));
-      b.addEventListener('click', () => ouvrir(ligne));
+      if (!bloquee) b.addEventListener('click', () => ouvrir(ligne));
       return el('li', {}, b);
     }));
   }
