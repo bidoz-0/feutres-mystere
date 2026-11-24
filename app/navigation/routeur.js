@@ -6,10 +6,12 @@ export function lireRoute(hash) {
 }
 
 export function demarrerRouteur(racine, vues) {
+  let courant = 0; // jeton : une vue asynchrone en retard ne doit plus toucher l'écran
   const afficher = () => {
     const route = lireRoute(location.hash);
+    const jeton = ++courant;
     racine.replaceChildren();
-    return vues[route.ecran](racine, route);
+    return vues[route.ecran](racine, route, () => jeton === courant);
   };
   addEventListener('hashchange', afficher);
   return afficher();
