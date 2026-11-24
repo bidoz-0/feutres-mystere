@@ -30,7 +30,7 @@ html:has(.scene) { overflow: hidden; }
 .scene { position: fixed; inset: 0; z-index: 10; display: flex; background: var(--carte); color: var(--encre); view-transition-class: boite; }
 /* Pas de verrouillage paysage possible (iPhone) : on couche la vue, le téléphone se tourne vers la gauche */
 @media (orientation: portrait) {
-  .scene { inset: auto; top: 0; left: 100%; width: 100dvh; height: 100dvw; transform-origin: 0 0; transform: rotate(90deg); }
+  .scene:not(.mode-liste) { inset: auto; top: 0; left: 100%; width: 100dvh; height: 100dvw; transform-origin: 0 0; transform: rotate(90deg); }
 }
 .rail { display: flex; flex-direction: column; align-items: center; gap: 14px; flex: none; width: 64px; padding: 10px 0; background: var(--papier); }
 .rail-bouton { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: var(--carte); box-shadow: var(--ombre); cursor: pointer; }

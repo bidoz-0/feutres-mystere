@@ -26,6 +26,13 @@ export async function entrerPaysage() {
   await attendreStable();
 }
 
+// Grille en paysage, liste en portrait (le plein écran est gardé) ; sans verrouillage possible, rien à faire ici.
+export async function orienter(sens) {
+  if (!actif) return;
+  try { await screen.orientation.lock(sens); } catch { return; }
+  await attendreStable();
+}
+
 export async function sortirPaysage() {
   try { screen.orientation.unlock(); } catch { /* rien à déverrouiller */ }
   if (!actif) return;

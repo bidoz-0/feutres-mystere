@@ -6,7 +6,7 @@ import { GRILLES, disposition } from './disposition.js';
 import { NOMS, grilleEcran, nbHorsUsage, texteHorsUsage } from './presentation.js';
 import { grilleBoite } from './grille-boite.js';
 import { listeBoite } from './liste-boite.js';
-import { sortirPaysage } from './plein-ecran.js';
+import { orienter, sortirPaysage } from './plein-ecran.js';
 import { transition, versRoute, vueAffichee } from './transition.js';
 
 const SVG = 'http://www.w3.org/2000/svg';
@@ -75,13 +75,18 @@ export async function vueBoite(racine, { marque }, estActuelle) {
       : listeBoite({ feutres: boite, memoire, surChangement: majCompte });
     // la mini-grille de la carte devient cette grille (transition d'ouverture et de fermeture)
     if (mode === 'grille') contenu.style.viewTransitionName = `grille-${marque}`;
+    scene.classList.toggle('mode-liste', mode === 'liste');
     zone.replaceChildren(contenu);
     zone.scrollTop = 0;
     bascule.replaceChildren(icone(mode === 'grille' ? 'liste' : 'grille'));
     bascule.setAttribute('aria-label', mode === 'grille' ? 'Voir la liste' : 'Voir la grille');
   };
-  bascule.addEventListener('click', () => {
+  bascule.addEventListener('click', async () => {
+    if (bascule.disabled) return;
+    bascule.disabled = true; // un double toucher ne lance pas deux rotations
     mode = mode === 'grille' ? 'liste' : 'grille';
+    try { await orienter(mode === 'grille' ? 'landscape' : 'portrait'); } // tourner avant la transition, sinon Chrome l'annule
+    finally { bascule.disabled = false; }
     scene.classList.add('bascule'); // nomme rail et zone pour cette transition seulement
     const vt = transition(() => afficher(false));
     if (vt) vt.finished.finally(() => scene.classList.remove('bascule'));
