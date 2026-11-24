@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, MALUS } from '../app/nuancier/proposer.js';
+import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, choixFiges, MALUS } from '../app/nuancier/proposer.js';
 
 const vrais = JSON.parse(readFileSync(new URL('../data/feutres.json', import.meta.url), 'utf8'));
 const BLEU_GUANGNA = 'GB-BLEU';
@@ -52,4 +52,10 @@ test('proposerParBoite : une liste par boîte, préférée en premier', () => {
   assert.deepEqual(g[0].feutres.map((x) => x.feutre.code), ['GB-ROUGE', BLEU_GUANGNA]);
   assert.deepEqual(g[1].feutres.map((x) => x.feutre.code), ['L1']);
   assert.deepEqual(proposerParBoite('#ff0000', f, 0).map((x) => x.marque), ['languo', 'guangna']);
+});
+
+test('choixFiges : seulement les symboles sans choix', () => {
+  const c = { cases: [{ symbole: 'a', hex: '#ff0000' }, { symbole: 'b', hex: '#0000ff' }] };
+  assert.deepEqual(choixFiges(c, f, 0, { b: { code: 'L1' } }), { a: { code: 'L1' } });
+  assert.deepEqual(choixFiges(c, f, 0, { a: { texte: 'x' }, b: { code: 'L1' } }), {});
 });

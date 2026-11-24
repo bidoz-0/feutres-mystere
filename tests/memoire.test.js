@@ -96,3 +96,11 @@ test('ancien état sans pagesFinies, ou forme invalide : valeurs vides', () => {
   assert.equal(casse.estLivreFini('l1'), false);
   assert.equal(casse.estLivreFini('l2'), true);
 });
+
+test("completerChoix n'écrase pas les choix existants", () => {
+  const s = faux();
+  const mem = creerMemoire(s);
+  mem.enregistrerChoix('l1', 3, 'a', { code: 'X' });
+  mem.completerChoix('l1', 3, { a: { code: 'Y' }, b: { code: 'Z' } });
+  assert.deepEqual(creerMemoire(s).lireChoix('l1', 3), { a: { code: 'X' }, b: { code: 'Z' } });
+});

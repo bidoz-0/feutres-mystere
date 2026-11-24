@@ -1,6 +1,8 @@
 // Mémorise choix, préférence et avancement dans le localStorage ; si indisponible, tout reste en mémoire vive.
 const CLE = 'feutres-mystere:v1';
 const objet = (v) => v !== null && typeof v === 'object' && !Array.isArray(v);
+// Ancien curseur (-1..1 par pas de 0,25) : un réglage léger compte comme « peu importe ».
+export const versChoix = (p) => (Math.abs(p) < 0.5 ? 0 : Math.sign(p));
 // ne garde que les entrées à true
 const vrais = (o) => Object.fromEntries(Object.entries(o).filter(([, v]) => v === true));
 
@@ -37,6 +39,16 @@ export function creerMemoire(stockage) {
         delete page[symbole];
         if (!Object.keys(page).length) delete etat.choix[cle];
       } else page[symbole] = structuredClone(choix);
+      sauver();
+    },
+    // Ajoute les choix absents sans écraser les existants, en une seule sauvegarde.
+    completerChoix(livreId, numero, nouveaux) {
+      const cle = `${livreId}/${numero}`;
+      const page = objet(etat.choix[cle]) ? etat.choix[cle] : {};
+      const ajouts = Object.entries(nouveaux).filter(([s]) => !(s in page));
+      if (!ajouts.length) return;
+      etat.choix[cle] = page;
+      for (const [s, c] of ajouts) page[s] = structuredClone(c);
       sauver();
     },
     lirePreference: () => etat.preference,

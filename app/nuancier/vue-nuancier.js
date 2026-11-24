@@ -1,13 +1,11 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
-import { creerMemoire } from '../memoire/memoire.js';
-import { proposerNuancier, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
+import { creerMemoire, versChoix } from '../memoire/memoire.js';
+import { proposerNuancier, choixFiges, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
 import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
 // Préférence mémorisée : -1 = Languo, 0 = peu importe, 1 = GuangNa.
 const CHOIX_MARQUE = [[-1, MARQUES.languo], [0, 'Peu importe'], [1, MARQUES.guangna]];
-// Ancien curseur (-1..1 par pas de 0,25) : un réglage léger compte comme « peu importe ».
-const versChoix = (p) => (Math.abs(p) < 0.5 ? 0 : Math.sign(p));
 
 export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   const retour = `#/livre/${livreId}`;
@@ -51,12 +49,18 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   const bandeau = el('p', { class: 'bandeau', role: 'status' });
   const boutonPage = el('button', { type: 'button', class: 'secondaire action-livre' });
   boutonPage.addEventListener('click', () => {
-    memoire.marquerPageFinie(livreId, numero, !memoire.estPageFinie(livreId, numero));
+    const finir = !memoire.estPageFinie(livreId, numero);
+    if (finir) figer();
+    memoire.marquerPageFinie(livreId, numero, finir);
     afficher();
   });
   racine.append(bandeau, reglage, liste, boutonPage, panneau);
   // Toucher le fond grisé ferme le panneau.
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
+
+  function figer() {
+    memoire.completerChoix(livreId, numero, choixFiges(coloriage, feutres, preference, memoire.lireChoix(livreId, numero)));
+  }
 
   function enregistrer(ligne, choix) {
     memoire.enregistrerChoix(livreId, numero, ligne.symbole, choix);
@@ -112,6 +116,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     const livreFini = memoire.estLivreFini(livreId);
     const bloquee = memoire.estPageBloquee(livreId, numero);
     bandeau.hidden = !bloquee;
+    reglage.disabled = bloquee;
     bandeau.textContent = livreFini ? 'Livre fini : feutres bloqués. Reprends le livre (depuis la liste des pages) pour modifier.'
       : 'Page finie : feutres bloqués';
     boutonPage.disabled = livreFini;
@@ -128,7 +133,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
           el('small', { texte: f ? MARQUES[f.marque] : 'saisie libre' }),
-          ligne.modifie ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
+          ligne.modifie && !bloquee ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
             ? el('span', { class: 'doublon' }, 'même feutre que ',
               ...dbl[ligne.symbole].flatMap((s, i) => [i ? ', ' : '', dessinSymbole(livre, s)]))
@@ -138,5 +143,6 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     }));
   }
 
+  if (memoire.estPageBloquee(livreId, numero)) figer(); // rattrapage des pages validées avant le correctif
   afficher();
 }

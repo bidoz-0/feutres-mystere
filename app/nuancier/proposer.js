@@ -41,6 +41,15 @@ export function proposerNuancier(coloriage, feutres, preference, choix) {
   });
 }
 
+// Feutres proposés à figer : seulement les symboles sans choix et avec un feutre proposé.
+export function choixFiges(coloriage, feutres, preference, choix) {
+  const figes = {};
+  for (const l of proposerNuancier(coloriage, feutres, preference, choix)) {
+    if (!choix?.[l.symbole] && l.feutre) figes[l.symbole] = { code: l.feutre.code };
+  }
+  return figes;
+}
+
 export function doublons(lignes) {
   const out = {};
   for (const a of lignes) {
