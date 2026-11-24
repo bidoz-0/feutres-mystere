@@ -2,10 +2,12 @@
 
 Page web pour téléphone : on choisit un livre de coloriages mystères Hachette, puis un coloriage, et l'appli propose pour chaque symbole le feutre le plus proche parmi les boîtes **Languo 240** et **GuangNa 168**. On peut favoriser une boîte, changer un feutre ou saisir une référence à la main.
 
-État : cadrage terminé, V1 en cours (voir `docs/superpowers/plans/`).
+**Appli en ligne : https://bidoz-0.github.io/feutres-mystere/**
 
-## Lancer
-Prérequis : [Node.js](https://nodejs.org) 20 ou plus. (Ces commandes marcheront une fois la première étape du plan codée.)
+État : V1 en ligne, avec 1 livre (Princesses Disney tome 2, 100 pages, 74 nuanciers).
+
+## Lancer en local
+Prérequis : [Node.js](https://nodejs.org) 20 ou plus.
 
 ```
 npm start      # puis ouvrir http://localhost:8080

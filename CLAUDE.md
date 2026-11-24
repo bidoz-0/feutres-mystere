@@ -7,7 +7,7 @@ Une page web pour téléphone qui choisit, pour chaque symbole d'un coloriage my
 HTML + CSS + JavaScript (modules ES), sans framework ni build, sans dépendance npm. Node.js pour le serveur local, les scripts d'extraction et les tests (`node --test`). Données dans des fichiers JSON (`data/`) ; choix de l'utilisatrice dans le `localStorage` du téléphone. Hébergement : GitHub Pages.
 
 ## Lancer / tester
-(Commandes disponibles après la Task 1 du plan.)
+En ligne : https://bidoz-0.github.io/feutres-mystere/ (GitHub Pages, publié depuis `main`).
 - `npm start` puis ouvrir http://localhost:8080
 - `npm test`
 - Extraire un livre : `node outils/extraire-livre.js sources/pdfs/<fichier>.pdf <id> "<titre>" [nombre de pages]` (ex. `… princesses-t2 "Princesses Disney – Tome 2" 100` : s'arrête si le dernier numéro imprimé diffère)
