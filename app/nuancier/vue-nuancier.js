@@ -1,6 +1,6 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
 import { creerMemoire, versChoix } from '../memoire/memoire.js';
-import { proposerNuancier, choixFiges, choixInconnus, proposerParBoite, doublons, trouverFeutre, TEXTE_INCONNU } from './proposer.js';
+import { proposerNuancier, disponibles, choixFiges, choixInconnus, proposerParBoite, doublons, trouverFeutre, TEXTE_INCONNU } from './proposer.js';
 import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
@@ -31,6 +31,8 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
 
   const memoire = creerMemoire();
   let preference = versChoix(memoire.lirePreference());
+  const indisponibles = memoire.lireIndisponibles();
+  const proposables = disponibles(feutres, indisponibles);
 
   const liste = el('ul', { class: 'lignes' });
   const panneau = el('dialog', { class: 'panneau', 'aria-labelledby': 'panneau-titre' });
@@ -66,7 +68,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
   function figer() {
-    memoire.completerChoix(livreId, numero, choixFiges(coloriage, feutres, preference, memoire.lireChoix(livreId, numero)));
+    memoire.completerChoix(livreId, numero, choixFiges(coloriage, feutres, preference, memoire.lireChoix(livreId, numero), proposables));
   }
 
   function enregistrer(ligne, choix) {
@@ -76,7 +78,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   }
 
   function ouvrir(ligne) {
-    const groupes = proposerParBoite(ligne.hex, feutres, preference, 3);
+    const groupes = proposerParBoite(ligne.hex, proposables, preference, 3);
     const saisie = el('input', { id: 'autre', type: 'text', autocomplete: 'off', autocapitalize: 'off',
       placeholder: 'ex. RY10 ou nom libre' });
     const formulaire = el('form', { class: 'autre' },
@@ -130,7 +132,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     boutonInconnu.hidden = bloquee;
     boutonPage.textContent = livreFini ? 'Livre fini : reprends le livre pour modifier cette page'
       : memoire.estPageFinie(livreId, numero) ? 'Reprendre la page' : 'Page finie';
-    const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero));
+    const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero), proposables);
     const dbl = doublons(l);
     liste.replaceChildren(...l.map((ligne) => {
       const f = ligne.feutre;
@@ -141,6 +143,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
           f ? el('small', { texte: MARQUES[f.marque] }) : ligne.texte === TEXTE_INCONNU ? null : el('small', { texte: 'saisie libre' }),
+          f && indisponibles.has(f.code) ? el('em', { class: 'etiquette alerte', texte: 'ne marche plus' }) : null,
           ligne.modifie && !bloquee ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
             ? el('span', { class: 'doublon' }, 'même feutre que ',

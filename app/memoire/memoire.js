@@ -10,7 +10,7 @@ export function creerMemoire(stockage) {
   if (stockage === undefined) {
     try { stockage = globalThis.localStorage; } catch { stockage = null; }
   }
-  let etat = { preference: 0, choix: {}, pagesFinies: {}, livresFinis: {} };
+  let etat = { preference: 0, choix: {}, pagesFinies: {}, livresFinis: {}, indisponibles: {} };
   try {
     const lu = JSON.parse(stockage?.getItem(CLE));
     if (objet(lu)) {
@@ -18,6 +18,7 @@ export function creerMemoire(stockage) {
       if (objet(lu.choix)) etat.choix = lu.choix;
       if (objet(lu.pagesFinies)) etat.pagesFinies = vrais(lu.pagesFinies);
       if (objet(lu.livresFinis)) etat.livresFinis = vrais(lu.livresFinis);
+      if (objet(lu.indisponibles)) etat.indisponibles = vrais(lu.indisponibles);
     }
   } catch { /* absent ou corrompu : valeurs par défaut */ }
 
@@ -57,6 +58,9 @@ export function creerMemoire(stockage) {
     marquerPageFinie: (livreId, numero, bool) => marquer(etat.pagesFinies, `${livreId}/${numero}`, bool),
     estLivreFini: (livreId) => etat.livresFinis[livreId] === true,
     marquerLivreFini: (livreId, bool) => marquer(etat.livresFinis, livreId, bool),
+    estIndisponible: (code) => etat.indisponibles[code] === true,
+    marquerIndisponible: (code, bool) => marquer(etat.indisponibles, code, bool),
+    lireIndisponibles: () => new Set(Object.keys(etat.indisponibles)),
     nbPagesFinies: (livreId) => Object.keys(etat.pagesFinies).filter((k) => k.startsWith(`${livreId}/`)).length,
   };
   // Bloquée = page finie ou livre fini.

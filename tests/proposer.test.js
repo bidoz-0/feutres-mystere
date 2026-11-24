@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { plusProches, proposerNuancier, doublons, trouverFeutre, proposerParBoite, choixFiges, choixInconnus, MALUS } from '../app/nuancier/proposer.js';
+import { plusProches, proposerNuancier, disponibles, doublons, trouverFeutre, proposerParBoite, choixFiges, choixInconnus, MALUS } from '../app/nuancier/proposer.js';
 
 const vrais = JSON.parse(readFileSync(new URL('../data/feutres.json', import.meta.url), 'utf8'));
 const BLEU_GUANGNA = 'GB-BLEU';
@@ -66,4 +66,26 @@ test('choixInconnus : ne remplit que les symboles sans choix', () => {
     a: { texte: 'Code couleur inconnu' },
     c: { texte: 'Code couleur inconnu' },
   });
+});
+
+test('disponibles retire les codes indisponibles', () => {
+  assert.deepEqual(disponibles(f, new Set(['L1'])).map((x) => x.code), ['GB-ROUGE', BLEU_GUANGNA]);
+});
+
+const rouge = { cases: [{ symbole: 'a', hex: '#ff0000' }] };
+
+test('proposerNuancier avec une boîte entièrement indisponible propose l\'autre boîte', () => {
+  const prop = disponibles(f, new Set(['GB-ROUGE', BLEU_GUANGNA]));
+  assert.equal(proposerNuancier(rouge, f, 1, {}, prop)[0].feutre.code, 'L1');
+});
+
+test('proposerNuancier avec aucun feutre disponible donne feutre: null', () => {
+  const [l] = proposerNuancier(rouge, f, 0, {}, []);
+  assert.equal(l.feutre, null);
+});
+
+test('un choix déjà fait sur un feutre indisponible est gardé', () => {
+  const prop = disponibles(f, new Set(['L1']));
+  const [l] = proposerNuancier(rouge, f, 0, { a: { code: 'L1' } }, prop);
+  assert.equal(l.feutre.code, 'L1');
 });

@@ -22,3 +22,11 @@ test('demarrerRouteur : une vue en retard n\'est plus actuelle', () => {
   assert.equal(actuelles[0](), false);
   assert.equal(actuelles[1](), true);
 });
+
+test('lireRoute : boîtes', () => {
+  assert.deepEqual(lireRoute('#/boites'), { ecran: 'boites' });
+  assert.deepEqual(lireRoute('#/boites/languo'), { ecran: 'boite', marque: 'languo' });
+  assert.deepEqual(lireRoute('#/boites/guangna/princesses-t2/7'),
+    { ecran: 'boite', marque: 'guangna', livreId: 'princesses-t2', numero: 7 });
+  assert.deepEqual(lireRoute('#/boites/languo/x'), { ecran: 'bibliotheque' });
+});
