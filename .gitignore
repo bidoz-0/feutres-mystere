@@ -1,0 +1,22 @@
+# Sources brutes (images vendeurs, PDF de l'auteur) : droits, jamais dans git
+sources/
+
+# Secrets
+.env
+.env.*
+*.pem
+*.key
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Système / éditeurs
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Claude Code (réglages locaux)
+.claude/settings.local.json
