@@ -68,3 +68,31 @@ test('creerMemoire(undefined) avec localStorage qui lève : mémoire vive', () =
     else delete globalThis.localStorage;
   }
 });
+
+test('pages et livres finis : aller-retour, comptage, blocage', () => {
+  const s = faux();
+  const mem = creerMemoire(s);
+  mem.marquerPageFinie('l1', 2, true);
+  mem.marquerPageFinie('l1', 3, true);
+  mem.marquerPageFinie('l10', 1, true);
+  const relu = creerMemoire(s);
+  assert.equal(relu.estPageFinie('l1', 2), true);
+  assert.equal(relu.estPageFinie('l1', 4), false);
+  assert.equal(relu.nbPagesFinies('l1'), 2); // « l10/ » ne compte pas
+  assert.equal(relu.estPageBloquee('l1', 2), true);
+  assert.equal(relu.estPageBloquee('l1', 4), false);
+  relu.marquerLivreFini('l1', true);
+  assert.equal(relu.estPageBloquee('l1', 4), true);
+  relu.marquerLivreFini('l1', false);
+  relu.marquerPageFinie('l1', 2, false);
+  assert.equal(relu.estPageFinie('l1', 2), false);
+  assert.equal(creerMemoire(s).estLivreFini('l1'), false);
+});
+
+test('ancien état sans pagesFinies, ou forme invalide : valeurs vides', () => {
+  const vieux = creerMemoire(faux(JSON.stringify({ preference: 1, choix: {} })));
+  assert.equal(vieux.nbPagesFinies('l1'), 0);
+  const casse = creerMemoire(faux(JSON.stringify({ pagesFinies: [1], livresFinis: { l1: 'oui', l2: true } })));
+  assert.equal(casse.estLivreFini('l1'), false);
+  assert.equal(casse.estLivreFini('l2'), true);
+});
