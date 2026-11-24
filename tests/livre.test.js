@@ -35,10 +35,12 @@ test('chaque symbole utilisé a son dessin dans glyphes', () => {
   }
 });
 
-test('coloriage « 28 » : le « c » imprimé deux fois devient c et c (2)', () => {
-  const cases = JSON.parse(fs.readFileSync(f, 'utf8')).coloriages.find((x) => x.libelle === '28').cases;
-  assert.equal(cases.find((k) => k.symbole === 'c').base, undefined);
-  assert.equal(cases.find((k) => k.symbole === 'c (2)').base, 'c');
+test('coloriage « 28 » : dernière case corrigée en ψ, aucun doublon dans le livre', () => {
+  const { coloriages } = JSON.parse(fs.readFileSync(f, 'utf8'));
+  const c = coloriages.find((x) => x.libelle === '28');
+  assert.equal(c.cases.at(-1).symbole, 'ψ');
+  assert.equal(c.cases.at(-1).base, undefined);
+  assert.equal(coloriages.flatMap((x) => x.cases).filter((k) => k.base).length, 0);
 });
 
 test('index.json contient princesses-t2', () => {

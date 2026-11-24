@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { numeroter } from '../outils/extraire-livre.js';
+import { numeroter, appliquerCorrections } from '../outils/extraire-livre.js';
 import { glyphesDeLibelle } from '../outils/glyphes.js';
 import { TABLE_LIBELLES } from '../outils/table-libelles.js';
 
@@ -33,4 +33,15 @@ test('glyphesDeLibelle : un point « m h » précède chaque glyphe, signature i
   assert.deepEqual(a.map((g) => g.y), [20, 20]);
   assert.notEqual(a[0].signature, a[1].signature);
   assert.deepEqual(a.map((g) => g.signature), b.map((g) => g.signature));
+});
+
+test('appliquerCorrections : change le symbole ; position ou symbole invalide → erreur', () => {
+  const livre = () => [{ numero: 3, cases: [{ symbole: 'a' }, { symbole: 'c' }] }];
+  const glyphes = { 'ψ': {} };
+  const l = livre();
+  appliquerCorrections(l, [{ numero: 3, position: 1, symbole: 'ψ' }], glyphes);
+  assert.deepEqual(l[0].cases.map((k) => k.symbole), ['a', 'ψ']);
+  assert.throws(() => appliquerCorrections(livre(), [{ numero: 3, position: 2, symbole: 'ψ' }], glyphes), /pas de case/);
+  assert.throws(() => appliquerCorrections(livre(), [{ numero: 9, position: 0, symbole: 'ψ' }], glyphes), /pas de case/);
+  assert.throws(() => appliquerCorrections(livre(), [{ numero: 3, position: 1, symbole: 'z' }], glyphes), /pas de dessin/);
 });

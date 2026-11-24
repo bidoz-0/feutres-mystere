@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import { lireFormes, grouperEnLignes } from './pdf.js';
 import { glyphesDeCase, signatureGlyphe, attribuerIds, regrouper, cheminGlyphe, glyphesDeLibelle } from './glyphes.js';
 import { TABLE_GLYPHES } from './table-glyphes.js';
+import { CORRECTIONS } from './corrections.js';
 import { TABLE_LIBELLES } from './table-libelles.js';
 
 // Contenu texte de chaque page, dans l'ordre de l'arbre des pages (/Kids).
@@ -95,6 +96,17 @@ export function numeroter(coloriages, nombrePages) {
   return coloriages;
 }
 
+// Remplace le symbole de la case `position` du coloriage `numero` ; le symbole doit exister dans `glyphes` (dessins du livre).
+export function appliquerCorrections(coloriages, corrections, glyphes) {
+  for (const { numero, position, symbole } of corrections) {
+    const k = coloriages.find((c) => c.numero === numero)?.cases[position];
+    if (!k) throw new Error(`Correction : pas de case ${position} dans le coloriage ${numero}`);
+    if (!glyphes[symbole]) throw new Error(`Correction : pas de dessin pour le symbole « ${symbole} »`);
+    console.log(`correction : coloriage ${numero}, case ${position} « ${k.symbole} » → « ${symbole} »`);
+    k.symbole = symbole;
+  }
+}
+
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const [pdf, id, titre, pages] = process.argv.slice(2);
   if (!pdf || !id || !titre) throw new Error('Usage : node outils/extraire-livre.js <pdf> <id> "<titre>" [nombre de pages]');
@@ -106,18 +118,20 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.error(`${inconnus.length} glyphes sans caractère dans outils/table-glyphes.js : ${inconnus.join(' ')}\nRien n'a été écrit. Voir sources/glyphes.html (node outils/apercu-glyphes.js).`);
     process.exit(1);
   }
+  const glyphes = {};
+  for (const c of coloriages) for (const k of c.cases) glyphes[TABLE_GLYPHES[k.signature]] ??= cheminGlyphe(k.glyphe);
+  for (const c of coloriages) for (const k of c.cases) k.symbole = TABLE_GLYPHES[k.signature];
+  appliquerCorrections(coloriages, CORRECTIONS[id] || [], glyphes);
   const sortie = coloriages.map((c) => {
     const vus = new Map();
     return { numero: c.numero, libelle: c.libelle, cases: c.cases.map((k) => {
-      const base = TABLE_GLYPHES[k.signature], n = (vus.get(base) || 0) + 1;
+      const base = k.symbole, n = (vus.get(base) || 0) + 1;
       vus.set(base, n);
       if (n === 1) return { symbole: base, hex: k.hex };
       console.log(`coloriage « ${c.libelle} » : symbole « ${base} » en double, renommé « ${base} (${n}) »`);
       return { symbole: `${base} (${n})`, base, hex: k.hex };
     }) };
   });
-  const glyphes = {};
-  for (const c of coloriages) for (const k of c.cases) glyphes[TABLE_GLYPHES[k.signature]] ??= cheminGlyphe(k.glyphe);
   const dossier = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'data', 'livres');
   fs.mkdirSync(dossier, { recursive: true });
   fs.writeFileSync(path.join(dossier, `${id}.json`), JSON.stringify({ id, titre, glyphes, coloriages: sortie }, null, 1) + '\n');
