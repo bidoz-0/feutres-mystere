@@ -104,3 +104,33 @@ test("completerChoix n'écrase pas les choix existants", () => {
   mem.completerChoix('l1', 3, { a: { code: 'Y' }, b: { code: 'Z' } });
   assert.deepEqual(creerMemoire(s).lireChoix('l1', 3), { a: { code: 'X' }, b: { code: 'Z' } });
 });
+
+test('feutres hors d\'usage : aller-retour persisté', () => {
+  const s = faux();
+  const mem = creerMemoire(s);
+  mem.marquerIndisponible('RY-07', true);
+  assert.equal(creerMemoire(s).estIndisponible('RY-07'), true);
+  assert.deepEqual([...creerMemoire(s).lireIndisponibles()], ['RY-07']);
+  mem.marquerIndisponible('RY-07', false);
+  assert.equal(creerMemoire(s).estIndisponible('RY-07'), false);
+});
+
+test('ancien état sans indisponibles : tout est disponible', () => {
+  const mem = creerMemoire(faux(JSON.stringify({ preference: 1, choix: {} })));
+  assert.equal(mem.lireIndisponibles().size, 0);
+});
+
+test('indisponibles : les entrées autres que true sont ignorées', () => {
+  const mem = creerMemoire(faux(JSON.stringify({ indisponibles: { A: true, B: false, C: 'oui' } })));
+  assert.deepEqual([...mem.lireIndisponibles()], ['A']);
+});
+
+test('page sans code : aller-retour et persistance', () => {
+  const s = faux(null);
+  const m = creerMemoire(s);
+  assert.equal(m.estPageSansCode('l1', 3), false);
+  m.marquerPageSansCode('l1', 3, true);
+  assert.equal(creerMemoire(s).estPageSansCode('l1', 3), true);
+  m.marquerPageSansCode('l1', 3, false);
+  assert.equal(creerMemoire(s).estPageSansCode('l1', 3), false);
+});

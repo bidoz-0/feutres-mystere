@@ -1,0 +1,143 @@
+/* Mes boîtes : cartes, boîte en paysage (capuchons, loupe, liste) et View Transitions. */
+:root {
+  --rouge: #c4262e;
+  --rouge-clair: #fde8e8;
+  /* Ressorts générés (amortissement, réponse) : ferme = 1 / 0,36 s (480 ms, sans rebond),
+     souple = 0,62 / 0,38 s (560 ms, +8 %), vif = 0,42 / 0,34 s (640 ms, +23 %) */
+  --ressort-ferme: linear(0, 0.033, 0.11, 0.207, 0.311, 0.411, 0.503, 0.586, 0.658, 0.72, 0.772, 0.815, 0.851, 0.88, 0.904, 0.924, 0.939, 0.952, 0.962, 0.97, 0.976, 0.981, 0.985, 0.988, 0.991, 0.993, 0.994, 0.996, 0.997, 0.997, 1);
+  --ressort-souple: linear(0, 0.024, 0.087, 0.177, 0.282, 0.394, 0.506, 0.613, 0.711, 0.798, 0.873, 0.935, 0.984, 1.022, 1.05, 1.068, 1.079, 1.083, 1.083, 1.078, 1.072, 1.063, 1.054, 1.045, 1.035, 1.027, 1.019, 1.013, 1.007, 1.003, 0.999, 0.997, 0.995, 0.994, 0.993, 0.993, 0.993, 0.994, 0.994, 0.995, 1);
+  --ressort-vif: linear(0, 0.034, 0.124, 0.253, 0.405, 0.565, 0.72, 0.863, 0.985, 1.083, 1.156, 1.204, 1.228, 1.233, 1.222, 1.198, 1.166, 1.13, 1.093, 1.057, 1.025, 0.997, 0.976, 0.96, 0.951, 0.946, 0.946, 0.949, 0.955, 0.963, 0.972, 0.98, 0.989, 0.996, 1.002, 1.007, 1.01, 1.012, 1.013, 1.013, 1.012, 1.01, 1.008, 1.006, 1);
+}
+
+/* Lien depuis la bibliothèque */
+.lien-boites { flex: none; display: inline-flex; align-items: center; min-height: 44px; margin-left: auto; padding: 0 16px; border-radius: 999px; background: var(--carte); box-shadow: var(--ombre); color: var(--accent); font-weight: 600; font-size: .95rem; text-decoration: none; white-space: nowrap; }
+
+/* Écran « Mes boîtes » */
+.boites { display: grid; gap: 14px; }
+.carte-boite { display: flex; flex-direction: column; gap: 4px; padding: 14px 14px 12px; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); text-decoration: none; view-transition-class: boite; }
+.mini-grille { display: grid; grid-template-columns: repeat(var(--colonnes), 1fr); gap: 2px; margin-bottom: 8px; }
+.mini-grille span { aspect-ratio: 1; border-radius: 50%; box-shadow: inset 0 0 0 1px rgb(46 36 48 / 14%); }
+.mini-grille span:not([style]) { box-shadow: inset 0 0 0 1px var(--trait); }
+.mini-grille .hs { opacity: .2; }
+.carte-titre { font-family: var(--titre); font-weight: 600; font-size: 1.3rem; line-height: 1.15; }
+.carte-boite small { color: var(--doux); }
+.carte-boite small.alerte { color: var(--rouge); font-weight: 600; }
+.lien-boites, .carte-boite, .rail-bouton, .ligne-feutre { transition: transform 160ms var(--sortie); }
+.lien-boites:active, .carte-boite:active, .ligne-feutre:active { transform: scale(0.97); }
+
+/* La boîte : plein écran, rail à gauche, capuchons à droite */
+html:has(.scene) { overflow: hidden; }
+.scene { position: fixed; inset: 0; z-index: 10; display: flex; background: var(--carte); color: var(--encre); view-transition-class: boite; }
+/* Pas de verrouillage paysage possible (iPhone) : on couche la vue, le téléphone se tourne vers la gauche */
+@media (orientation: portrait) {
+  .scene { inset: auto; top: 0; left: 100%; width: 100dvh; height: 100dvw; transform-origin: 0 0; transform: rotate(90deg); }
+}
+.rail { display: flex; flex-direction: column; align-items: center; gap: 14px; flex: none; width: 64px; padding: 10px 0; background: var(--papier); }
+.rail-bouton { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 50%; background: var(--carte); box-shadow: var(--ombre); cursor: pointer; }
+.rail-bouton:active { transform: scale(0.94); }
+.rail-bouton:last-child { margin-top: auto; }
+.rail-bouton svg { width: 22px; height: 22px; fill: none; stroke: var(--encre); stroke-linecap: round; stroke-linejoin: round; }
+/* Tranche de boîte : texte vertical lu de bas en haut */
+.tranche, .compte { margin: 0; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; }
+.tranche { font-family: var(--titre); font-weight: 600; font-size: 1.25rem; line-height: 1; letter-spacing: .01em; }
+.compte { margin-top: auto; color: var(--doux); font-size: .85rem; line-height: 1.2; font-variant-numeric: tabular-nums; }
+.compte.alerte { color: var(--rouge); font-weight: 600; }
+.zone { position: relative; flex: 1; min-width: 0; display: grid; place-items: center; padding: 10px 14px 10px 10px; container-type: size; overflow-y: auto; overscroll-behavior: contain; }
+
+/* Capuchons : la grille garde les proportions de la boîte et remplit la place disponible */
+.grille-boite { position: relative; display: grid; grid-template-columns: repeat(var(--colonnes), 1fr); grid-template-rows: repeat(var(--lignes), 1fr);
+  width: min(100cqw, 100cqh * var(--colonnes) / var(--lignes)); aspect-ratio: var(--colonnes) / var(--lignes);
+  container-type: inline-size; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+.capuchon { position: relative; display: block; width: 100%; height: 100%; min-width: 0; padding: 0; border: 0; background: none; cursor: pointer; transition: transform 140ms var(--sortie); }
+.capuchon.vise { transform: scale(0.86); }
+.capuchon.vide::before { content: ""; position: absolute; inset: 12%; border-radius: 50%; border: 1.5px dashed var(--trait); }
+.disque { position: absolute; inset: 7%; display: grid; place-items: center; border-radius: 50%; background: var(--c);
+  /* dessus de capuchon : léger relief, reflet en haut, ombre portée courte */
+  box-shadow: inset 0 0 0 1px rgb(46 36 48 / 14%), inset 0 -2px 3px rgb(46 36 48 / 16%), inset 0 2px 2px rgb(255 255 255 / 40%), 0 1px 1.5px rgb(46 36 48 / 18%);
+  transition: opacity 200ms ease; }
+.code { font-family: var(--titre); font-weight: 600; font-size: calc(100cqw / var(--colonnes) * .3); line-height: .95; text-align: center; font-variant-numeric: tabular-nums; pointer-events: none; }
+.code.deux-lignes { font-size: calc(100cqw / var(--colonnes) * .24); }
+.code span { display: block; }
+.sur-clair { color: rgb(46 36 48 / 80%); }
+.sur-fonce { color: rgb(255 255 255 / 94%); }
+/* « Ne marche plus » : anneau rouge qui se pose, trait qui barre, couleur atténuée. Sortie plus rapide que l'entrée. */
+.capuchon:not(.vide)::before { content: ""; position: absolute; inset: 1%; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--rouge); opacity: 0; transform: scale(1.2); transition: opacity 120ms ease, transform 160ms var(--sortie); }
+.capuchon:not(.vide)::after { content: ""; position: absolute; left: 10%; right: 10%; top: calc(50% - 1.25px); height: 2.5px; border-radius: 2px; background: var(--rouge); box-shadow: 0 0 0 1px var(--carte); transform: rotate(-45deg) scaleX(0); transition: transform 130ms var(--sortie); }
+.capuchon[aria-pressed="true"]::before { opacity: 1; transform: none; transition: opacity 160ms ease, transform 420ms var(--ressort-souple); }
+.capuchon[aria-pressed="true"]::after { transform: rotate(-45deg) scaleX(1); transition: transform 260ms var(--sortie) 60ms; }
+.capuchon[aria-pressed="true"] .disque { opacity: .45; }
+
+/* Ouverture : les capuchons sortent en diagonale (délais posés par grille-boite.js) */
+.grille-boite.cascade .capuchon { animation: capuchon-sort 560ms var(--ressort-souple) backwards; }
+@keyframes capuchon-sort { from { opacity: 0; transform: scale(0.5); } }
+
+/* Loupe : suit le doigt, montre le capuchon visé en grand */
+.loupe { position: absolute; left: 0; top: 0; z-index: 3; pointer-events: none; }
+.loupe.visible { transition: transform 90ms var(--sortie); }
+.loupe-corps { position: absolute; display: flex; align-items: center; gap: 10px; padding: 8px 16px 8px 8px; border-radius: 999px; background: var(--carte); white-space: nowrap;
+  box-shadow: 0 0 0 1px rgb(46 36 48 / 6%), 0 2px 4px rgb(46 36 48 / 10%), 0 12px 28px rgb(46 36 48 / 22%);
+  opacity: 0; transform: scale(0.92); transition: opacity 110ms ease, transform 110ms var(--sortie); }
+.loupe[data-sens="dessus"] .loupe-corps { translate: -50% calc(-100% - 10px); transform-origin: 50% 100%; }
+.loupe[data-sens="gauche"] .loupe-corps { translate: calc(-100% - 10px) -50%; transform-origin: 100% 50%; }
+.loupe[data-sens="droite"] .loupe-corps { translate: 10px -50%; transform-origin: 0 50%; }
+.loupe.visible .loupe-corps { opacity: 1; transform: none; transition-duration: 150ms; }
+.loupe .pastille { width: 48px; height: 48px; }
+.loupe strong { font-family: var(--titre); font-weight: 600; font-size: 1.2rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.loupe .etiquette { margin-top: 2px; }
+.loupe [hidden] { display: none; }
+
+/* Liste écrite */
+.vue-liste { align-self: start; width: 100%; padding-bottom: 16px; }
+.filtre-hs { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; margin-bottom: 12px; padding: 0 16px 0 12px; border-radius: 999px; background: var(--papier-fonce); font-weight: 600; font-size: .95rem; cursor: pointer; }
+.filtre-hs:has(input:checked) { background: var(--rouge-clair); color: var(--rouge); }
+.filtre-hs input, .case-hs input { width: 22px; height: 22px; margin: 0; accent-color: var(--rouge); }
+.liste-boite { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 8px; }
+.ligne-feutre { display: flex; align-items: center; gap: 12px; min-height: 60px; padding: 8px 12px 8px 8px; border-radius: 14px; background: var(--papier); cursor: pointer; }
+.ligne-feutre .texte { flex: 1; }
+.ligne-feutre .pastille { transition: opacity 200ms ease; }
+.case-hs { display: flex; align-items: center; gap: 6px; color: var(--doux); font-size: .85rem; }
+.ligne-feutre:has(input:checked) .pastille { opacity: .45; }
+.ligne-feutre:has(input:checked) .case-hs { color: var(--rouge); font-weight: 600; }
+.liste-vide { color: var(--doux); }
+.liste-vide[hidden] { display: none; }
+
+/* View Transitions. La carte devient la boîte (et inversement) : groupe sur un ressort sans rebond ;
+   l'ancienne image reste opaque dessous pendant que la nouvelle apparaît, donc pas de « trou » au milieu. */
+::view-transition-group(.boite) { animation-duration: 480ms; animation-timing-function: var(--ressort-ferme); }
+::view-transition-old(.boite), ::view-transition-new(.boite) { height: 100%; object-fit: cover; overflow: clip; }
+::view-transition-old(.boite) { animation: none; }
+::view-transition-new(.boite) { animation: vt-apparait 240ms var(--sortie) 40ms both; }
+@keyframes vt-apparait { from { opacity: 0; } }
+/* Les couleurs restent à leur place : la mini-grille de la carte grandit jusqu'à la vraie grille,
+   les capuchons sortent par-dessus en cascade, puis la mini-grille s'efface. */
+.mini-grille, .grille-boite { view-transition-class: grille; }
+::view-transition-group(.grille) { animation-duration: 480ms; animation-timing-function: var(--ressort-ferme); }
+::view-transition-old(.grille), ::view-transition-new(.grille) { height: 100%; }
+::view-transition-new(.grille) { animation: none; }
+::view-transition-old(.grille) { animation: vt-efface 220ms ease 300ms both; }
+@keyframes vt-efface { to { opacity: 0; } }
+/* fermeture depuis la liste : pas de grille à faire rétrécir, la mini-grille apparaît simplement */
+::view-transition-new(.grille):only-child { animation: vt-apparait 200ms var(--sortie) 200ms both; }
+/* l'autre boîte (sans partenaire) s'efface vite au lieu de rester jusqu'à la fin */
+::view-transition-old(.boite):only-child, ::view-transition-old(.grille):only-child { animation: vt-efface 150ms ease both; }
+/* Grille ↔ liste : le rail ne bouge pas, le contenu se fond avec un léger flou */
+.scene.bascule .rail { view-transition-name: rail-boite; }
+.scene.bascule .zone { view-transition-name: zone-boite; }
+.scene.bascule .grille-boite { view-transition-name: none !important; }
+::view-transition-old(zone-boite) { animation: vt-sort 140ms var(--sortie) both; }
+::view-transition-new(zone-boite) { animation: vt-entre 260ms var(--sortie) 60ms both; }
+@keyframes vt-sort { to { opacity: 0; transform: scale(0.985); filter: blur(2px); } }
+@keyframes vt-entre { from { opacity: 0; transform: scale(1.015); filter: blur(2px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  /* plus d'élément partagé : un simple fondu de 150 ms */
+  .scene, .carte-boite, .mini-grille, .grille-boite, .scene.bascule .rail, .scene.bascule .zone { view-transition-name: none !important; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 150ms; }
+  .grille-boite.cascade .capuchon { animation: none; }
+  .lien-boites:active, .carte-boite:active, .ligne-feutre:active, .rail-bouton:active, .capuchon.vise { transform: none; }
+  .capuchon:not(.vide)::before, .capuchon[aria-pressed="true"]::before { transform: none; transition: opacity 150ms ease; }
+  .capuchon:not(.vide)::after { transform: rotate(-45deg); opacity: 0; transition: opacity 150ms ease; }
+  .capuchon[aria-pressed="true"]::after { transform: rotate(-45deg); opacity: 1; transition: opacity 150ms ease; }
+  .loupe.visible { transition: none; }
+  .loupe-corps, .loupe.visible .loupe-corps { transform: none; }
+}

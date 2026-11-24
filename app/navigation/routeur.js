@@ -1,4 +1,10 @@
 export function lireRoute(hash) {
+  const b = /^#\/boites(?:\/([^/]+)(?:\/([^/]+)\/(\d+))?)?$/.exec(hash);
+  if (b) {
+    const [, marque, livreId, n] = b;
+    if (!marque) return { ecran: 'boites' };
+    return livreId ? { ecran: 'boite', marque, livreId, numero: Number(n) } : { ecran: 'boite', marque };
+  }
   const [, section, livreId, n] = /^#\/(livre)\/([^/]+)(?:\/(\d+))?$/.exec(hash) ?? [];
   if (!section) return { ecran: 'bibliotheque' };
   if (n === undefined) return { ecran: 'coloriages', livreId };

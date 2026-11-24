@@ -78,7 +78,7 @@ a { text-underline-offset: 3px; text-decoration-color: var(--accent); }
 .numero.finie { background: var(--accent-clair); }
 .action-livre { display: block; width: 100%; margin-top: 24px; }
 .bandeau { margin: 0 0 16px; padding: 12px 16px; border-radius: 12px; background: var(--accent-clair); color: var(--encre); font-weight: 600; }
-.bandeau[hidden] { display: none; }
+.bandeau[hidden], .action-livre[hidden] { display: none; }
 .ligne.bloquee { cursor: default; }
 
 /* Nuancier : choix de la boîte préférée */
@@ -126,6 +126,7 @@ html:has(.panneau[open]) { overflow: hidden; }
 .alternatives button { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 60px; padding: 8px 14px 8px 8px; text-align: left; border: 2px solid transparent; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); cursor: pointer; }
 .alternatives button[aria-current] { border-color: var(--accent); }
 .alternatives .texte { flex: 1; }
+.etiquette.alerte { background: #fde8e8; color: #b42318; }
 .alternatives .etiquette { margin: 0; align-self: center; }
 .delta { display: flex; flex-direction: column; align-items: flex-end; font-family: var(--titre); font-weight: 500; font-size: 1.1rem; line-height: 1.1; font-variant-numeric: tabular-nums; }
 .delta small { font-family: system-ui, sans-serif; font-weight: 400; font-size: .75rem; color: var(--doux); }
@@ -148,3 +149,7 @@ button[type=submit] { border: 0; background: var(--accent); color: var(--accent-
   .carre:active, .numero:active, .ligne:not(.bloquee):active, .alternatives button:active, .retour:active,
   .option:active, button[type=submit]:active, .secondaire:active:not(:disabled) { transform: none; }
 }
+.sans-code { display: grid; justify-items: center; gap: 8px; margin: 8px 0 16px; padding: 28px 20px; border-radius: var(--rayon); background: var(--carte); box-shadow: var(--ombre); text-align: center; }
+.sans-code strong { font-family: var(--titre); font-weight: 600; font-size: 1.4rem; }
+.sans-code p { margin: 0 0 8px; color: var(--doux); }
+.sans-code[hidden], .lignes[hidden], .reglage[hidden] { display: none; }

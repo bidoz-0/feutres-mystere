@@ -1,6 +1,6 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
 import { creerMemoire, versChoix } from '../memoire/memoire.js';
-import { proposerNuancier, choixFiges, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
+import { proposerNuancier, disponibles, choixFiges, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
 import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
@@ -31,6 +31,8 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
 
   const memoire = creerMemoire();
   let preference = versChoix(memoire.lirePreference());
+  const indisponibles = memoire.lireIndisponibles();
+  const proposables = disponibles(feutres, indisponibles);
 
   const liste = el('ul', { class: 'lignes' });
   const panneau = el('dialog', { class: 'panneau', 'aria-labelledby': 'panneau-titre' });
@@ -51,15 +53,34 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   boutonPage.addEventListener('click', () => {
     const finir = !memoire.estPageFinie(livreId, numero);
     if (finir) figer();
+    else memoire.marquerPageSansCode(livreId, numero, false);
     memoire.marquerPageFinie(livreId, numero, finir);
     afficher();
   });
-  racine.append(bandeau, reglage, liste, boutonPage, panneau);
+  const boutonInconnu = el('button', { type: 'button', class: 'secondaire action-livre',
+    texte: 'Fini, je n\'ai pas noté les feutres' });
+  boutonInconnu.addEventListener('click', () => {
+    memoire.marquerPageSansCode(livreId, numero, true);
+    memoire.marquerPageFinie(livreId, numero, true);
+    afficher();
+  });
+  // Page finie sans code : une seule carte à la place des lignes, avec de quoi régénérer le code couleur.
+  const boutonRegenerer = el('button', { type: 'button', class: 'secondaire', texte: 'Régénérer le code couleur' });
+  boutonRegenerer.addEventListener('click', () => {
+    memoire.marquerPageSansCode(livreId, numero, false);
+    figer();
+    afficher();
+  });
+  const carteSansCode = el('section', { class: 'sans-code', 'aria-live': 'polite' },
+    el('strong', { texte: 'Code couleur inconnu' }),
+    el('p', { texte: 'Ce dessin est fini, mais ses feutres n’ont pas été notés.' }),
+    boutonRegenerer);
+  racine.append(bandeau, reglage, carteSansCode, liste, boutonPage, boutonInconnu, panneau);
   // Toucher le fond grisé ferme le panneau.
   panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
   function figer() {
-    memoire.completerChoix(livreId, numero, choixFiges(coloriage, feutres, preference, memoire.lireChoix(livreId, numero)));
+    memoire.completerChoix(livreId, numero, choixFiges(coloriage, feutres, preference, memoire.lireChoix(livreId, numero), proposables));
   }
 
   function enregistrer(ligne, choix) {
@@ -69,7 +90,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   }
 
   function ouvrir(ligne) {
-    const groupes = proposerParBoite(ligne.hex, feutres, preference, 3);
+    const groupes = proposerParBoite(ligne.hex, proposables, preference, 3);
     const saisie = el('input', { id: 'autre', type: 'text', autocomplete: 'off', autocapitalize: 'off',
       placeholder: 'ex. RY10 ou nom libre' });
     const formulaire = el('form', { class: 'autre' },
@@ -115,14 +136,20 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   function afficher() {
     const livreFini = memoire.estLivreFini(livreId);
     const bloquee = memoire.estPageBloquee(livreId, numero);
-    bandeau.hidden = !bloquee;
+    const sansCode = memoire.estPageSansCode(livreId, numero);
+    carteSansCode.hidden = !sansCode;
+    liste.hidden = sansCode;
+    reglage.hidden = sansCode;
+    boutonRegenerer.disabled = livreFini;
+    bandeau.hidden = !bloquee || sansCode;
     reglage.disabled = bloquee;
     bandeau.textContent = livreFini ? 'Livre fini : feutres bloqués. Reprends le livre (depuis la liste des pages) pour modifier.'
       : 'Page finie : feutres bloqués';
     boutonPage.disabled = livreFini;
+    boutonInconnu.hidden = bloquee;
     boutonPage.textContent = livreFini ? 'Livre fini : reprends le livre pour modifier cette page'
       : memoire.estPageFinie(livreId, numero) ? 'Reprendre la page' : 'Page finie';
-    const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero));
+    const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero), proposables);
     const dbl = doublons(l);
     liste.replaceChildren(...l.map((ligne) => {
       const f = ligne.feutre;
@@ -133,6 +160,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
           el('small', { texte: f ? MARQUES[f.marque] : 'saisie libre' }),
+          f && indisponibles.has(f.code) ? el('em', { class: 'etiquette alerte', texte: 'ne marche plus' }) : null,
           ligne.modifie && !bloquee ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
             ? el('span', { class: 'doublon' }, 'même feutre que ',
@@ -143,6 +171,6 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     }));
   }
 
-  if (memoire.estPageBloquee(livreId, numero)) figer(); // rattrapage des pages validées avant le correctif
+  if (memoire.estPageBloquee(livreId, numero) && !memoire.estPageSansCode(livreId, numero)) figer(); // rattrapage des pages validées avant le correctif
   afficher();
 }

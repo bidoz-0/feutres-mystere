@@ -29,9 +29,13 @@ export function trouverFeutre(saisie, feutres) {
   return s ? feutres.find((f) => norm(f.code) === s) ?? null : null;
 }
 
-export function proposerNuancier(coloriage, feutres, preference, choix) {
+// Retire les feutres hors d'usage.
+export const disponibles = (feutres, indisponibles) => feutres.filter((f) => !indisponibles.has(f.code));
+
+// `feutres` retrouve les choix déjà faits ; seul `proposables` sert aux nouvelles propositions.
+export function proposerNuancier(coloriage, feutres, preference, choix, proposables = feutres) {
   return coloriage.cases.map(({ symbole, hex }) => {
-    const propose = plusProches(hex, feutres, preference, 1)[0]?.feutre ?? null;
+    const propose = plusProches(hex, proposables, preference, 1)[0]?.feutre ?? null;
     const c = choix?.[symbole];
     if (!c) return { symbole, hex, feutre: propose, texte: null, modifie: false };
     const feutre = c.code !== undefined ? feutres.find((f) => f.code === c.code) : null;
@@ -42,9 +46,9 @@ export function proposerNuancier(coloriage, feutres, preference, choix) {
 }
 
 // Feutres proposés à figer : seulement les symboles sans choix et avec un feutre proposé.
-export function choixFiges(coloriage, feutres, preference, choix) {
+export function choixFiges(coloriage, feutres, preference, choix, proposables = feutres) {
   const figes = {};
-  for (const l of proposerNuancier(coloriage, feutres, preference, choix)) {
+  for (const l of proposerNuancier(coloriage, feutres, preference, choix, proposables)) {
     if (!choix?.[l.symbole] && l.feutre) figes[l.symbole] = { code: l.feutre.code };
   }
   return figes;
