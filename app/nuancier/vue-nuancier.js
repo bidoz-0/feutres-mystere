@@ -1,9 +1,13 @@
 import { chargerFeutres, chargerLivre } from '../donnees/charger.js';
 import { creerMemoire } from '../memoire/memoire.js';
-import { proposerNuancier, plusProches, doublons, trouverFeutre } from './proposer.js';
-import { el, entete, erreur, pastille, dessinSymbole } from '../ui/elements.js';
+import { proposerNuancier, proposerParBoite, doublons, trouverFeutre } from './proposer.js';
+import { el, entete, erreur, duo, pastille, dessinSymbole } from '../ui/elements.js';
 
 const MARQUES = { languo: 'Languo', guangna: 'GuangNa' };
+// Préférence mémorisée : -1 = Languo, 0 = peu importe, 1 = GuangNa.
+const CHOIX_MARQUE = [[-1, MARQUES.languo], [0, 'Peu importe'], [1, MARQUES.guangna]];
+// Ancien curseur (-1..1 par pas de 0,25) : un réglage léger compte comme « peu importe ».
+const versChoix = (p) => (Math.abs(p) < 0.5 ? 0 : Math.sign(p));
 
 export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   const retour = `#/livre/${livreId}`;
@@ -28,17 +32,25 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   racine.append(entete(`${coloriage.libelle.includes(' & ') ? 'Pages' : 'Page'} ${coloriage.libelle}`, retour));
 
   const memoire = creerMemoire();
-  const lignes = (pref) =>
-    proposerNuancier(coloriage, feutres, pref, memoire.lireChoix(livreId, numero));
+  let preference = versChoix(memoire.lirePreference());
 
   const liste = el('ul', { class: 'lignes' });
   const panneau = el('dialog', { class: 'panneau', 'aria-labelledby': 'panneau-titre' });
-  const curseur = el('input', { id: 'curseur', type: 'range', min: -1, max: 1, step: 0.25,
-    value: memoire.lirePreference() });
-  racine.append(
-    el('div', { class: 'reglage' },
-      el('label', { for: 'curseur', texte: 'Languo ◀ ▶ GuangNa' }), curseur),
-    liste, panneau);
+  const reglage = el('fieldset', { class: 'reglage' },
+    el('legend', { texte: 'Boîte préférée' }),
+    el('div', { class: 'options' }, ...CHOIX_MARQUE.map(([valeur, nom]) => {
+      const radio = el('input', { type: 'radio', name: 'marque', value: valeur,
+        checked: valeur === preference ? '' : null });
+      radio.addEventListener('change', () => {
+        preference = valeur;
+        memoire.enregistrerPreference(valeur);
+        afficher();
+      });
+      return el('label', { class: 'option' }, radio, el('span', { texte: nom }));
+    })));
+  racine.append(reglage, liste, panneau);
+  // Toucher le fond grisé ferme le panneau.
+  panneau.addEventListener('click', (e) => { if (e.target === panneau) panneau.close(); });
 
   function enregistrer(ligne, choix) {
     memoire.enregistrerChoix(livreId, numero, ligne.symbole, choix);
@@ -47,7 +59,7 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
   }
 
   function ouvrir(ligne) {
-    const alternatives = plusProches(ligne.hex, feutres, memoire.lirePreference(), 5);
+    const groupes = proposerParBoite(ligne.hex, feutres, preference, 3);
     const saisie = el('input', { id: 'autre', type: 'text', autocomplete: 'off', autocapitalize: 'off',
       placeholder: 'ex. RY10 ou nom libre' });
     const formulaire = el('form', { class: 'autre' },
@@ -67,37 +79,42 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     fermer.addEventListener('click', () => panneau.close());
 
     panneau.replaceChildren(
-      el('h2', { id: 'panneau-titre' }, 'Symbole ', dessinSymbole(livre, ligne.symbole),
-        pastille(ligne.hex, 'couleur du livre')),
-      el('ul', { class: 'alternatives' }, ...alternatives.map(({ feutre, distance }) => {
-        const actuel = ligne.feutre?.code === feutre.code;
-        const b = el('button', { type: 'button', 'aria-current': actuel ? 'true' : null },
-          pastille(feutre.hex, 'couleur du feutre'),
-          el('span', { class: 'texte' }, el('strong', { texte: feutre.code }),
-            el('small', { texte: `${MARQUES[feutre.marque]}${feutre.nom !== feutre.code ? ` · ${feutre.nom}` : ''}` })),
-          actuel ? el('em', { class: 'modifie', texte: 'actuel' }) : null,
-          el('span', { class: 'delta', texte: `ΔE ${Math.round(distance)}` }));
-        b.addEventListener('click', () => enregistrer(ligne, { code: feutre.code }));
-        return el('li', {}, b);
-      })),
+      el('div', { class: 'poignee', 'aria-hidden': 'true' }),
+      el('h2', { id: 'panneau-titre' },
+        el('span', { class: 'cellule-symbole' }, dessinSymbole(livre, ligne.symbole)),
+        pastille(ligne.hex, 'couleur du livre'),
+        el('span', { texte: 'Quel feutre ?' })),
+      ...groupes.map(({ marque, feutres: proches }) => el('section', { class: 'boite' },
+        el('h3', { texte: MARQUES[marque] }),
+        el('ul', { class: 'alternatives' }, ...proches.map(({ feutre, distance }) => {
+          const actuel = ligne.feutre?.code === feutre.code;
+          const b = el('button', { type: 'button', 'aria-current': actuel ? 'true' : null },
+            duo(ligne.hex, feutre.hex),
+            el('span', { class: 'texte' }, el('strong', { texte: feutre.code }),
+              feutre.nom !== feutre.code ? el('small', { texte: feutre.nom }) : null),
+            actuel ? el('em', { class: 'etiquette', texte: 'choisi' }) : null,
+            el('span', { class: 'delta', 'aria-label': `écart de couleur ${Math.round(distance)}` },
+              el('small', { texte: 'écart' }), String(Math.round(distance))));
+          b.addEventListener('click', () => enregistrer(ligne, { code: feutre.code }));
+          return el('li', {}, b);
+        })))),
       formulaire, el('div', { class: 'actions' }, revenir, fermer));
     panneau.showModal();
   }
 
   function afficher() {
-    const l = lignes(Number(curseur.value));
+    const l = proposerNuancier(coloriage, feutres, preference, memoire.lireChoix(livreId, numero));
     const dbl = doublons(l);
     liste.replaceChildren(...l.map((ligne) => {
       const f = ligne.feutre;
       const nom = f ? (f.nom !== f.code ? `${f.code} · ${f.nom}` : f.code) : ligne.texte;
       const b = el('button', { type: 'button', class: 'ligne' },
         el('span', { class: 'cellule-symbole' }, dessinSymbole(livre, ligne.symbole)),
-        pastille(ligne.hex, 'couleur du livre'),
-        pastille(f?.hex, 'couleur du feutre'),
+        duo(ligne.hex, f?.hex),
         el('span', { class: 'texte' },
           el('strong', { texte: nom }),
           el('small', { texte: f ? MARQUES[f.marque] : 'saisie libre' }),
-          ligne.modifie ? el('em', { class: 'modifie', texte: 'modifié' }) : null,
+          ligne.modifie ? el('em', { class: 'etiquette', texte: 'modifié' }) : null,
           dbl[ligne.symbole]
             ? el('span', { class: 'doublon' }, 'même feutre que ',
               ...dbl[ligne.symbole].flatMap((s, i) => [i ? ', ' : '', dessinSymbole(livre, s)]))
@@ -107,6 +124,5 @@ export async function vueNuancier(racine, { livreId, numero }, estActuelle) {
     }));
   }
 
-  curseur.addEventListener('input', () => { memoire.enregistrerPreference(Number(curseur.value)); afficher(); });
   afficher();
 }
