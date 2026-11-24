@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { grilleEcran, delaiCascade, listeTriee, nbHorsUsage, texteHorsUsage, encreSur } from '../app/boites/presentation.js';
+import { grilleEcran, delaiCascade, listeTriee, chercherFeutres, horsUsageTries, nbHorsUsage, texteHorsUsage, encreSur } from '../app/boites/presentation.js';
 
 test('grilleEcran : boîte large gardée telle quelle', () => {
   const g = grilleEcran({ rangees: 7, colonnes: 24 });
@@ -43,4 +43,25 @@ test('texteHorsUsage et encreSur', () => {
   assert.equal(texteHorsUsage(3), '3 ne marchent plus');
   assert.equal(encreSur('#fefefe'), 'sur-clair');
   assert.equal(encreSur('#1a1a40'), 'sur-fonce');
+});
+
+const F = [
+  { marque: 'languo', code: 'RY-01', nom: 'RY-01' }, { marque: 'languo', code: 'RY-07', nom: 'RY-07' },
+  { marque: 'languo', code: 'RY-10', nom: 'RY-10' }, { marque: 'guangna', code: '611', nom: 'Vert Éméraude' },
+  { marque: 'guangna', code: '70', nom: 'mint green' },
+];
+
+test('chercherFeutres : code exact, préfixe, nom sans accent, vide, max', () => {
+  assert.deepEqual(chercherFeutres(F, 'ry-07').map((f) => f.code), ['RY-07']);
+  assert.deepEqual(chercherFeutres(F, 'ry 0').map((f) => f.code), ['RY-01', 'RY-07']);
+  assert.deepEqual(chercherFeutres(F, 'ry0').map((f) => f.code), ['RY-01', 'RY-07']);
+  assert.deepEqual(chercherFeutres(F, 'EMERAUDE').map((f) => f.code), ['611']);
+  assert.deepEqual(chercherFeutres(F, 'mint').map((f) => f.code), ['70']);
+  assert.deepEqual(chercherFeutres(F, '  '), []);
+  assert.equal(chercherFeutres(F, 'ry', 2).length, 2);
+});
+
+test('horsUsageTries : par boîte puis par code', () => {
+  const hs = new Set(['RY-10', '611', 'RY-01']);
+  assert.deepEqual(horsUsageTries(F, hs).map((f) => f.code), ['611', 'RY-01', 'RY-10']);
 });

@@ -1,18 +1,8 @@
 // Liste écrite d'une boîte : pastille, code, nom et case « ne marche plus », triée par code.
-import { el, pastille } from '../ui/elements.js';
+import { el } from '../ui/elements.js';
 import { listeTriee } from './presentation.js';
-
-function ligne(f, horsUsage, memoire, surChangement) {
-  const caseHs = el('input', { type: 'checkbox', checked: horsUsage });
-  caseHs.addEventListener('change', () => {
-    memoire.marquerIndisponible(f.code, caseHs.checked);
-    surChangement();
-  });
-  return el('li', {}, el('label', { class: 'ligne-feutre' },
-    pastille(f.hex, f.code),
-    el('span', { class: 'texte' }, el('strong', { texte: f.code }), f.nom !== f.code ? el('small', { texte: f.nom }) : null),
-    el('span', { class: 'case-hs' }, caseHs, el('span', { texte: 'ne marche plus' }))));
-}
+import { ligneFeutre } from './ligne-feutre.js';
+import { champRecherche } from './recherche.js';
 
 export function listeBoite({ feutres, memoire, surChangement }) {
   const filtre = el('input', { type: 'checkbox' });
@@ -22,12 +12,13 @@ export function listeBoite({ feutres, memoire, surChangement }) {
   const remplir = () => {
     const indisponibles = memoire.lireIndisponibles();
     const choisis = listeTriee(feutres, indisponibles, filtre.checked);
-    lignes.replaceChildren(...choisis.map((f) => ligne(f, indisponibles.has(f.code), memoire, surChangement)));
+    lignes.replaceChildren(...choisis.map((f) => ligneFeutre(f, indisponibles.has(f.code), memoire, surChangement)));
     vide.hidden = choisis.length > 0;
   };
   filtre.addEventListener('change', remplir);
   remplir();
-  return el('div', { class: 'vue-liste' },
+  const recherche = champRecherche({ feutres, memoire, surChangement: () => { surChangement(); remplir(); } });
+  return el('div', { class: 'vue-liste' }, recherche,
     el('label', { class: 'filtre-hs' }, filtre, el('span', { texte: 'Seulement ceux qui ne marchent plus' })),
     lignes, vide);
 }
